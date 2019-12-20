@@ -3,10 +3,8 @@ language: rust
 if: branch = master
 
 install:
-  # - cargo install cargo-screeps
-  # - cat screeps.toml | sed "r/TOKEN/$AUTH/" > screeps.toml
-  - cat screeps-secure.toml | sed "s/TOKEN/$TEST/" > screeps.toml
+  - cargo install cargo-screeps
+  - cat screeps-secure.toml | sed "s/TOKEN/$AUTH/" > screeps.toml
 
 script:
-  - cat screeps.toml
-  # - cargo screeps upload
+  - cargo screeps upload
