@@ -4,7 +4,7 @@ if: branch = master
 
 install:
   # This only needs to run, to generate the cache. After that, it is done.
-  # - cargo install cargo-screeps
+  - cargo install cargo-screeps || echo "Ah well..."
   - cat screeps-secure.toml | sed "s/TOKEN/$AUTH/" > screeps.toml
 
 script:
@@ -19,7 +19,6 @@ script:
 cache:
   directories:
     - /home/travis/.cargo
-    - target/wasm32*
 
 # But don't cache the cargo registry
 before_cache:
