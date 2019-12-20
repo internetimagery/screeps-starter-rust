@@ -19,6 +19,7 @@ script:
 cache:
   directories:
     - /home/travis/.cargo
+    - target/wasm32*
 
 # But don't cache the cargo registry
 before_cache:
