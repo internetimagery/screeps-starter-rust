@@ -3,7 +3,8 @@ language: rust
 if: branch = master
 
 install:
-  - cargo install cargo-screeps
+  # This only needs to run, to generate the cache. After that, it is done.
+  # - cargo install cargo-screeps
   - cat screeps-secure.toml | sed "s/TOKEN/$AUTH/" > screeps.toml
 
 script:
