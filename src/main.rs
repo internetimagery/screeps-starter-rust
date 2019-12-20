@@ -81,7 +81,7 @@ fn game_loop() {
         if creep.memory().bool("harvesting") {
             let source = &creep.room().find(find::SOURCES)[0];
             if creep.pos().is_near_to(source) {
-                creep.say("Yum!", true);
+                creep.say("⏳", true);
                 let r = creep.harvest(source);
                 if r != ReturnCode::Ok {
                     warn!("couldn't harvest: {:?}", r);
