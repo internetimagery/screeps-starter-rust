@@ -5,6 +5,7 @@ use screeps::{find, prelude::*, Part, ResourceType, ReturnCode, RoomObjectProper
 use stdweb::js;
 
 mod logging;
+mod stages;
 
 fn main() {
     logging::setup_logging(logging::Info);
@@ -32,7 +33,10 @@ fn main() {
 }
 
 fn game_loop() {
-    debug!("loop starting! CPU: {}", screeps::game::cpu::get_used());
+    info!(">>> loop starting! CPU: {}", screeps::game::cpu::get_used());
+
+    // Run our AI game loop
+    stages::Stage::new(Box::new(stages::BuildBase {})).go();
 
     debug!("running spawns");
     for spawn in screeps::game::spawns::values() {
@@ -106,11 +110,11 @@ fn game_loop() {
     let time = screeps::game::time();
 
     if time % 32 == 3 {
-        info!("running memory cleanup");
+        debug!("running memory cleanup");
         cleanup_memory().expect("expected Memory.creeps format to be a regular memory object");
     }
 
-    info!("done! cpu: {}", screeps::game::cpu::get_used())
+    info!("<<< done! cpu: {}", screeps::game::cpu::get_used())
 }
 
 fn cleanup_memory() -> Result<(), Box<dyn std::error::Error>> {
