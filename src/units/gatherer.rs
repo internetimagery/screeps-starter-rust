@@ -1,4 +1,5 @@
-// Units
+// Super simple cheap unit to gather energy and return it to the spawn.
+// What a boring life... Good starter unit though! :)
 
 use log::*;
 use screeps::objects::Creep;
@@ -6,7 +7,6 @@ use screeps::{find, prelude::*, Part, ResourceType, ReturnCode};
 
 use crate::units::UnitController;
 
-// Super simple cheap unit to gather energy and return it to the spawn
 pub struct Gatherer {}
 
 impl UnitController for Gatherer {
@@ -14,7 +14,7 @@ impl UnitController for Gatherer {
         "Gatherer"
     }
     fn get_body(&self) -> &'static [Part] {
-        &[Part::Move, Part::Move, Part::Carry, Part::Work]
+        &[Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
         if creep.memory().bool("harvesting") {

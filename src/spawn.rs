@@ -1,6 +1,6 @@
+use crate::units::{Unit, UnitTypes::*};
 use log::*;
 use screeps::objects::StructureSpawn;
-use crate::units::{Unit, UnitTypes::*};
 
 pub trait UnitSpawn {
     fn create(&self, spawn: &StructureSpawn) -> Option<String>;

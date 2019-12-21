@@ -8,11 +8,14 @@ use screeps::{game, Part, ReturnCode};
 use crate::creeps::UnitCreep;
 use crate::spawn::UnitSpawn;
 
+// Units
+mod gatherer;
+mod zombie;
+
+// Unit type field
 const ROLE: &'static str = "role";
 
-mod gatherer;
-
-// Different unit types
+// Unit type ID's
 #[derive(Copy, Clone)]
 pub enum UnitTypes {
     Gatherer = 0,
@@ -39,9 +42,10 @@ impl From<i32> for Unit {
     fn from(unit_type: i32) -> Self {
         Unit {
             unit_type: unit_type,
-            controller: Box::new(match unit_type {
-                _ => gatherer::Gatherer {},
-            }),
+            controller: match unit_type {
+                x if x == UnitTypes::Gatherer as i32 => Box::new(gatherer::Gatherer {}),
+                _ => Box::new(zombie::Zombie {}),
+            },
         }
     }
 }
