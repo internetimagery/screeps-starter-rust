@@ -11,6 +11,7 @@ use crate::spawn::UnitSpawn;
 // Units
 mod clumsy;
 mod gatherer;
+mod upgrader;
 
 // Unit type field
 const ROLE: &'static str = "role";
@@ -19,6 +20,7 @@ const ROLE: &'static str = "role";
 #[derive(Copy, Clone)]
 pub enum UnitTypes {
     Gatherer = 0,
+    Upgrader = 1,
 }
 
 // Required functionality of a controller
@@ -43,6 +45,7 @@ impl From<i32> for Unit {
         Unit {
             unit_type: unit_type,
             controller: match unit_type {
+                x if x == UnitTypes::Upgrader as i32 => Box::new(upgrader::Upgrader {}),
                 x if x == UnitTypes::Gatherer as i32 => Box::new(gatherer::Gatherer {}),
                 _ => Box::new(clumsy::Clumsy {}),
             },
