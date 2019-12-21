@@ -37,17 +37,19 @@ fn main() {
 }
 
 fn game_loop() {
-    info!(">>> loop starting! CPU: {}", screeps::game::cpu::get_used());
+    info!(">>> loop starting! cpu: {}", screeps::game::cpu::get_used());
 
     // Spawn some units (maybe)
     for spawn in screeps::game::spawns::values() {
         run_spawn(spawn);
     }
 
+    // Run our creeps AI
     for creep in screeps::game::creeps::values() {
         run_creep(creep);
     }
 
+    // Be a good citizen
     run_cleanup();
 
     info!("<<< done! cpu: {}", screeps::game::cpu::get_used())
