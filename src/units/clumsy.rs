@@ -5,17 +5,17 @@ use screeps::Part;
 
 use crate::units::UnitController;
 
-pub struct Zombie {}
+pub struct Clumsy {}
 
-impl UnitController for Zombie {
+impl UnitController for Clumsy {
     fn get_name(&self) -> &'static str {
-        "Zombie"
+        "Clumsy"
     }
     fn get_body(&self) -> &'static [Part] {
         &[Part::Move]
     }
     fn control_creep(&self, creep: &Creep) {
-        creep.say("Goodbye cruel world!", true);
+        creep.say("Oh I seem to have tripped on a bannana peel!", true);
         creep.suicide();
     }
 }

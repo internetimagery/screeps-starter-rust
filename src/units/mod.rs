@@ -9,8 +9,8 @@ use crate::creeps::UnitCreep;
 use crate::spawn::UnitSpawn;
 
 // Units
+mod clumsy;
 mod gatherer;
-mod zombie;
 
 // Unit type field
 const ROLE: &'static str = "role";
@@ -44,7 +44,7 @@ impl From<i32> for Unit {
             unit_type: unit_type,
             controller: match unit_type {
                 x if x == UnitTypes::Gatherer as i32 => Box::new(gatherer::Gatherer {}),
-                _ => Box::new(zombie::Zombie {}),
+                _ => Box::new(clumsy::Clumsy {}),
             },
         }
     }
