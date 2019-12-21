@@ -1,16 +1,14 @@
-
 use log::*;
-use std::collections::HashSet;
 use screeps::{game, memory};
+use std::collections::HashSet;
 
 pub fn run_cleanup() {
     let time = game::time();
     if time % 32 == 3 {
-        debug!("running memory cleanup");
+        debug!("Running memory cleanup...");
         cleanup_memory().expect("expected Memory.creeps format to be a regular memory object");
     }
 }
-
 
 fn cleanup_memory() -> Result<(), Box<dyn std::error::Error>> {
     let alive_creeps: HashSet<String> = game::creeps::keys().into_iter().collect();

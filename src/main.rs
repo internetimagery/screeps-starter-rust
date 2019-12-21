@@ -1,15 +1,16 @@
-
 use log::*;
+use screeps::game;
 use stdweb::js;
 
+mod cleanup;
+mod creeps;
 mod logging;
 mod spawn;
-mod creeps;
-mod cleanup;
+mod units;
 
-use spawn::run_spawn;
-use creeps::run_creep;
 use cleanup::run_cleanup;
+use creeps::run_creep;
+use spawn::run_spawn;
 
 fn main() {
     logging::setup_logging(logging::Info);
@@ -37,20 +38,20 @@ fn main() {
 }
 
 fn game_loop() {
-    info!(">>> loop starting! cpu: {}", screeps::game::cpu::get_used());
+    info!(">>> loop starting! cpu: {}", game::cpu::get_used());
 
     // Spawn some units (maybe)
-    for spawn in screeps::game::spawns::values() {
+    for spawn in game::spawns::values() {
         run_spawn(spawn);
     }
 
     // Run our creeps AI
-    for creep in screeps::game::creeps::values() {
+    for creep in game::creeps::values() {
         run_creep(creep);
     }
 
     // Be a good citizen
     run_cleanup();
 
-    info!("<<< done! cpu: {}", screeps::game::cpu::get_used())
+    info!("<<< done! cpu: {}", game::cpu::get_used())
 }
