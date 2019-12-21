@@ -6,6 +6,7 @@ mod cleanup;
 mod creeps;
 mod logging;
 mod spawn;
+mod strategies;
 mod units;
 
 use cleanup::run_cleanup;

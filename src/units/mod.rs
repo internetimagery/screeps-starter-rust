@@ -6,7 +6,7 @@ use screeps::objects::{Creep, SpawnOptions, StructureSpawn};
 use screeps::{game, Part, ReturnCode};
 
 use crate::creeps::UnitCreep;
-use crate::spawn::UnitSpawn;
+use crate::strategies::UnitSpawn;
 
 // Units
 mod clumsy;
@@ -103,5 +103,12 @@ impl UnitCreep for Unit {
             return;
         }
         self.controller.control_creep(&creep);
+    }
+}
+
+// Utility functions
+impl Unit {
+    pub fn cost(&self) -> u32 {
+        self.controller.get_body().iter().map(|p| p.cost()).sum()
     }
 }
