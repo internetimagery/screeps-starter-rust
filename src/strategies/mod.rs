@@ -3,8 +3,9 @@
 // Should change strategy automatically?
 // Should be possible to change it in the console?
 // strategy should handle spawning of troops and perhaps rally points etc
+// perhaps strategy could also handle some creeps by setting memory data on them
 
-use crate::spawn::StrategySpawn;
+use crate::game_loop::StrategySpawn;
 use log::*;
 use screeps::objects::StructureSpawn;
 
