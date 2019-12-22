@@ -3,7 +3,7 @@
 use log::*;
 use screeps::memory::MemoryReference;
 use screeps::objects::{Creep, SpawnOptions, StructureSpawn};
-use screeps::{game, Part, ReturnCode};
+use screeps::{game, prelude::*, Part, ReturnCode};
 
 use crate::game_loop::UnitCreep;
 use crate::strategies::UnitSpawn;
@@ -13,8 +13,10 @@ mod clumsy;
 mod gatherer;
 mod upgrader;
 
-// Unit type field
+// Common fields
 const ROLE: &'static str = "role";
+const SPAWN: &'static str = "spawn";
+const STATE: &'static str = "state";
 
 // Unit type ID's
 #[derive(Copy, Clone)]
@@ -77,6 +79,8 @@ impl UnitSpawn for Unit {
         let body = self.controller.get_body();
         let memory = self.controller.get_memory();
         memory.set(ROLE, self.unit_type);
+        memory.set(SPAWN, &*spawn.id().to_array_string());
+        memory.set(STATE, 0);
 
         let mut index = game::time();
         let spawn_options = SpawnOptions::new().memory(memory);
