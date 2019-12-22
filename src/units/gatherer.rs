@@ -1,6 +1,7 @@
 // Grab some energy and give it out to everyone.
 // Simple cheap starter unit
 
+use crate::units::upgrader::Upgrader;
 use log::*;
 use screeps::objects::Creep;
 use screeps::{find, prelude::*, Part, ResourceType, ReturnCode};
@@ -21,6 +22,18 @@ impl UnitController for Gatherer {
         let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
         let source = &creep.room().find(find::SOURCES)[0];
         let spawn = creep.get_spawn();
+
+        // If the spawn is already full, perform the task of an upgrader
+        if spawn.is_some()
+            && spawn
+                .as_ref()
+                .unwrap()
+                .store_free_capacity(Some(ResourceType::Energy))
+                == 0
+        {
+            Upgrader {}.control_creep(creep);
+            return;
+        }
 
         // Go get some energy or upgrade
         if empty {

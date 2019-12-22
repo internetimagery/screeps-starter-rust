@@ -9,8 +9,8 @@ use crate::game_loop::StrategySpawn;
 use log::*;
 use screeps::objects::StructureSpawn;
 
-mod simple_base;
 mod caveman;
+mod simple_base;
 
 // Allow units to spawn
 pub trait UnitSpawn {
