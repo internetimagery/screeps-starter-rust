@@ -134,3 +134,24 @@ impl Unit {
         self.controller.get_body().iter().map(|p| p.cost()).sum()
     }
 }
+
+// Get creeps attached to this spawn
+pub trait SpawnTeam {
+    fn get_team(&self) -> Vec<Creep>;
+}
+
+// Get our team!
+impl SpawnTeam for StructureSpawn {
+    fn get_team(&self) -> Vec<Creep> {
+        let team_id = self.id().to_string();
+        let mut creeps = vec![];
+        for creep in game::creeps::values() {
+            if let Ok(Some(check_id)) = creep.memory().string(SPAWN) {
+                if check_id == team_id {
+                    creeps.push(creep);
+                }
+            }
+        }
+        creeps
+    }
+}

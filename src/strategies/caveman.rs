@@ -1,9 +1,9 @@
 // Starting from nothing. Build some basic units to gather materials and upgrade equally
 use crate::strategies::{StrategyController, UnitSpawn};
-use crate::units::{CreepSpawn, Unit, UnitTypes::*, ROLE};
+use crate::units::{SpawnTeam, Unit, UnitTypes::*, ROLE};
 use log::*;
 use screeps::objects::StructureSpawn;
-use screeps::{game, prelude::*};
+use screeps::prelude::*;
 
 pub struct Caveman {}
 
@@ -11,16 +11,11 @@ impl StrategyController for Caveman {
     fn recruit(&self, spawn: &StructureSpawn) {
         let mut upgraders = 0;
         let mut gatherers = 0;
-        for creep in game::creeps::values() {
-            if let Some(linked_spawn) = creep.get_spawn() {
-                if &linked_spawn != spawn {
-                    continue;
-                }
-                match creep.memory().i32(ROLE) {
-                    Ok(Some(c)) if c == Upgrader as i32 => upgraders += 1,
-                    Ok(Some(c)) if c == Gatherer as i32 => gatherers += 1,
-                    _ => (),
-                }
+        for creep in spawn.get_team() {
+            match creep.memory().i32(ROLE) {
+                Ok(Some(c)) if c == Upgrader as i32 => upgraders += 1,
+                Ok(Some(c)) if c == Gatherer as i32 => gatherers += 1,
+                _ => (),
             }
         }
         let mut unit = None;
