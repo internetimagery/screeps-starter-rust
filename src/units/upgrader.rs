@@ -36,9 +36,13 @@ impl UnitController for Upgrader {
             }
             ReturnCode::NotInRange => {
                 if controller.is_some() {
-                    match creep.upgrade_controller(&controller.unwrap()) {
+                    match creep.upgrade_controller(&controller.as_ref().unwrap()) {
                         ReturnCode::Ok => (), // Success
-                        ReturnCode::NotInRange => (),
+                        ReturnCode::NotInRange => {
+                            if creep.store_used_capacity(Some(ResourceType::Energy)) > 0 {
+                                creep.move_to(&controller.unwrap());
+                            }
+                        },
                         x => warn!("Failed to upgrade controller: {:?}", x),
                     }
                 }
