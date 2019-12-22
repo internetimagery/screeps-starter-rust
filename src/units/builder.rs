@@ -22,22 +22,28 @@ impl UnitController for Builder {
         let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
         let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
         let source = &creep.room().find(find::SOURCES)[0];
-        let constructions = game::structures::values()
-            .into_iter()
-            .filter(|structure| match structure.as_has_store() {
-                Some(construct) => construct.store_free_capacity(Some(ResourceType::Energy)) > 0,
-                None => false,
-            })
-            .collect::<Vec<_>>();
+        let constructions = game::construction_sites::values();
+        // let constructions = game::structures::values()
+        //     .into_iter()
+        //     .filter(|structure| match structure.as_has_store() {
+        //         Some(construct) => construct.store_free_capacity(Some(ResourceType::Energy)) > 0,
+        //         None => false,
+        //     })
+        //     .collect::<Vec<_>>();
 
         // There is nothing to build. Help out with upgrading
         if constructions.len() == 0 {
             Upgrader {}.control_creep(creep);
             return;
         }
+        // let construction = constructions
+        //     .into_iter()
+        //     .min_by_key(|c| c.as_has_store().unwrap().energy())
+        //     .unwrap();
+        let my_pos = creep.pos();
         let construction = constructions
             .into_iter()
-            .min_by_key(|c| c.as_has_store().unwrap().energy())
+            .min_by_key(|c| c.pos().get_range_to(&my_pos))
             .unwrap();
 
         // Go get some energy or build
@@ -51,10 +57,7 @@ impl UnitController for Builder {
         match creep.harvest(source) {
             ReturnCode::Ok => (),
             ReturnCode::NotInRange => {
-                match creep.transfer_all(
-                    construction.as_transferable().unwrap(),
-                    ResourceType::Energy,
-                ) {
+                match creep.build(&construction) {
                     ReturnCode::Ok | ReturnCode::NotEnough => (),
                     ReturnCode::NotInRange => {
                         // If creep has a little bit of energy, use the last of it
@@ -62,10 +65,32 @@ impl UnitController for Builder {
                             creep.move_to(&construction);
                         }
                     }
-                    x => warn!("Failed to upgrade controller: {:?}", x),
+                    x => warn!("Failed to build: {:?}", x),
                 }
             }
             x => warn!("Failed to harvest: {:?}", x),
         }
     }
+
+    //
+    // // Harvest or transfer
+    // match creep.harvest(source) {
+    //     ReturnCode::Ok => (),
+    //     ReturnCode::NotInRange => {
+    //         match creep.transfer_all(
+    //             construction.as_transferable().unwrap(),
+    //             ResourceType::Energy,
+    //         ) {
+    //             ReturnCode::Ok | ReturnCode::NotEnough => (),
+    //             ReturnCode::NotInRange => {
+    //                 // If creep has a little bit of energy, use the last of it
+    //                 if creep.store_used_capacity(Some(ResourceType::Energy)) > 0 {
+    //                     creep.move_to(&construction);
+    //                 }
+    //             }
+    //             x => warn!("Failed to upgrade controller: {:?}", x),
+    //         }
+    //     }
+    //     x => warn!("Failed to harvest: {:?}", x),
+    // }
 }

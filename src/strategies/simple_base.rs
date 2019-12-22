@@ -10,12 +10,10 @@ pub struct SimpleBase {}
 
 impl StrategyController for SimpleBase {
     fn recruit(&self, spawn: &StructureSpawn) {
-        let mut builders = 0;
         let mut miners = 0;
 
         for creep in spawn.get_team() {
             match creep.get_role() {
-                Builder => builders += 1,
                 Miner => miners += 1,
                 _ => (),
             }
@@ -24,11 +22,8 @@ impl StrategyController for SimpleBase {
         // TODO: Make some construction sites
 
         let mut unit = None;
-        // Make sure we have some builders
-        // TODO: Number of builders should increase when number of structures does
-        if builders < 2 {
-            unit = Some(Unit::from(Builder));
-        } else if miners < spawn.room().find(find::SOURCES).len() {
+        // At least one miner per energy source
+        if miners < spawn.room().find(find::SOURCES).len() * 2 {
             unit = Some(Unit::from(Miner));
         }
 

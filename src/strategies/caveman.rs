@@ -3,7 +3,7 @@ use crate::strategies::{StrategyController, UnitSpawn};
 use crate::units::{CreepRole, SpawnTeam, Unit, UnitTypes::*};
 use log::*;
 use screeps::objects::StructureSpawn;
-use screeps::prelude::*;
+use screeps::{find, prelude::*};
 
 pub struct Caveman {
     pub next: Option<Box<dyn StrategyController>>,
@@ -16,10 +16,13 @@ impl StrategyController for Caveman {
 
         let mut upgraders = 0;
         let mut gatherers = 0;
+        let mut builders = 0;
+
         for creep in &team {
             match creep.get_role() {
                 Upgrader => upgraders += 1,
                 Gatherer => gatherers += 1,
+                Builder => builders += 1,
                 _ => (),
             }
         }
@@ -33,6 +36,8 @@ impl StrategyController for Caveman {
         // If we have some upgraders, get some more gatherers
         } else if gatherers < 4 {
             unit = Some(Unit::from(Gatherer));
+        } else if builders < spawn.room().find(find::CONSTRUCTION_SITES).len() + 1 {
+            unit = Some(Unit::from(Builder));
         }
 
         if unit.is_some() && spawn.energy() >= unit.as_ref().unwrap().cost() {
