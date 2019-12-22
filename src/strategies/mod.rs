@@ -9,6 +9,7 @@ use crate::game_loop::StrategySpawn;
 use log::*;
 use screeps::objects::StructureSpawn;
 
+mod basic_defense;
 mod caveman;
 
 // Allow units to spawn
@@ -17,7 +18,7 @@ pub trait UnitSpawn {
 }
 
 // Requirements for controllers
-trait StrategyController {
+pub trait StrategyController {
     fn recruit(&self, spawn: &StructureSpawn);
 }
 
@@ -29,9 +30,11 @@ pub struct Strategy {
 // Get a Strategy from a spawn
 impl From<&StructureSpawn> for Strategy {
     fn from(_: &StructureSpawn) -> Self {
-        // todo: add some kind of chain-of-responsibility in here
+        let strategy_chain = caveman::Caveman {
+            next: Some(Box::new(basic_defense::BasicDefense {})),
+        };
         Strategy {
-            controller: Box::new(caveman::Caveman {}),
+            controller: Box::new(strategy_chain),
         }
     }
 }
