@@ -15,13 +15,8 @@ impl UnitController for Builder {
         "Builder"
     }
     fn get_body(&self) -> &'static [Part] {
-        &[
-            Part::Move,
-            Part::Carry,
-            Part::Carry,
-            Part::Work,
-            Part::Tough,
-        ]
+        // Needs to cost < 300
+        &[Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
         let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;

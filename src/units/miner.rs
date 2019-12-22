@@ -14,7 +14,7 @@ impl UnitController for Miner {
         "Miner"
     }
     fn get_body(&self) -> &'static [Part] {
-        &[Part::Move, Part::Carry, Part::Work, Part::Work, Part::Work]
+        &[Part::Move, Part::Carry, Part::Work, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
         let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
