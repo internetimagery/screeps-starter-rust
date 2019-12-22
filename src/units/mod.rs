@@ -73,7 +73,7 @@ impl From<&Creep> for Unit {
     }
 }
 
-trait CreepSpawn {
+pub trait CreepSpawn {
     fn get_spawn(&self) -> Option<StructureSpawn>;
 }
 
