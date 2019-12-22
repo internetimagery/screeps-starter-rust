@@ -34,9 +34,7 @@ impl StrategyController for Caveman {
         } else if upgraders < 2 {
             unit = Some(Unit::from(Upgrader));
         // If we have some upgraders, get some more gatherers
-        } else if gatherers < 4 {
-            unit = Some(Unit::from(Gatherer));
-        } else if builders < spawn.room().find(find::CONSTRUCTION_SITES).len() + 1 {
+        } else if builders < spawn.room().find(find::CONSTRUCTION_SITES).len() + 2 {
             unit = Some(Unit::from(Builder));
         }
 
