@@ -9,21 +9,24 @@ use std::str::FromStr;
 use crate::game_loop::UnitCreep;
 use crate::strategies::UnitSpawn;
 
-// Units
+// Basic Units
+mod builder;
 mod clumsy;
 mod gatherer;
 mod upgrader;
 
 // Common fields
-pub const ROLE: &'static str = "role";
-pub const SPAWN: &'static str = "spawn";
+const ROLE: &'static str = "role";
+const SPAWN: &'static str = "spawn";
 pub const STATE: &'static str = "state";
 
 // Unit type ID's
 #[derive(Copy, Clone)]
 pub enum UnitTypes {
-    Gatherer = 0,
-    Upgrader = 1,
+    Zombie = 0,
+    Gatherer = 1,
+    Upgrader = 2,
+    Builder = 3,
 }
 
 // Required functionality of a controller
@@ -50,6 +53,7 @@ impl From<i32> for Unit {
             controller: match unit_type {
                 x if x == UnitTypes::Upgrader as i32 => Box::new(upgrader::Upgrader {}),
                 x if x == UnitTypes::Gatherer as i32 => Box::new(gatherer::Gatherer {}),
+                x if x == UnitTypes::Builder as i32 => Box::new(builder::Builder {}),
                 _ => Box::new(clumsy::Clumsy {}),
             },
         }
@@ -132,6 +136,22 @@ impl UnitCreep for Unit {
 impl Unit {
     pub fn cost(&self) -> u32 {
         self.controller.get_body().iter().map(|p| p.cost()).sum()
+    }
+}
+
+// Get the role a creep has
+pub trait CreepRole {
+    fn get_role(&self) -> UnitTypes;
+}
+
+impl CreepRole for Creep {
+    fn get_role(&self) -> UnitTypes {
+        match self.memory().i32(ROLE) {
+            Ok(Some(c)) if c == UnitTypes::Upgrader as i32 => UnitTypes::Upgrader,
+            Ok(Some(c)) if c == UnitTypes::Gatherer as i32 => UnitTypes::Gatherer,
+            Ok(Some(c)) if c == UnitTypes::Builder as i32 => UnitTypes::Builder,
+            _ => UnitTypes::Zombie,
+        }
     }
 }
 

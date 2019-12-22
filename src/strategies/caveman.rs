@@ -1,6 +1,6 @@
 // Starting from nothing. Build some basic units to gather materials and upgrade equally
 use crate::strategies::{StrategyController, UnitSpawn};
-use crate::units::{SpawnTeam, Unit, UnitTypes::*, ROLE};
+use crate::units::{SpawnTeam, CreepRole, Unit, UnitTypes::*};
 use log::*;
 use screeps::objects::StructureSpawn;
 use screeps::prelude::*;
@@ -13,17 +13,13 @@ impl StrategyController for Caveman {
     fn recruit(&self, spawn: &StructureSpawn) {
         // If we have built some dudes we can move onto something else
         let team = spawn.get_team();
-        if self.next.is_some() && team.len() > 5 {
-            self.next.as_ref().unwrap().recruit(spawn);
-            return;
-        }
 
         let mut upgraders = 0;
         let mut gatherers = 0;
-        for creep in team {
-            match creep.memory().i32(ROLE) {
-                Ok(Some(c)) if c == Upgrader as i32 => upgraders += 1,
-                Ok(Some(c)) if c == Gatherer as i32 => gatherers += 1,
+        for creep in &team {
+            match creep.get_role() {
+                Upgrader => upgraders += 1,
+                Gatherer => gatherers += 1,
                 _ => (),
             }
         }
@@ -35,7 +31,7 @@ impl StrategyController for Caveman {
         } else if upgraders < 2 {
             unit = Some(Unit::from(Upgrader));
         // If we have some upgraders, get some more gatherers
-        } else if gatherers < 5 {
+        } else if gatherers < 4 {
             unit = Some(Unit::from(Gatherer));
         }
 
@@ -43,6 +39,10 @@ impl StrategyController for Caveman {
             if let Some(unit_id) = unit.unwrap().create(&spawn) {
                 info!("Created {}", unit_id);
             }
+        }
+
+        if team.len() > 4 && self.next.is_some() {
+            self.next.as_ref().unwrap().recruit(spawn);
         }
     }
 }
