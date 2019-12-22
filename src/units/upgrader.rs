@@ -37,7 +37,7 @@ impl UnitController for Upgrader {
             ReturnCode::NotInRange => {
                 if controller.is_some() {
                     match creep.upgrade_controller(&controller.as_ref().unwrap()) {
-                        ReturnCode::Ok => (), // Success
+                        ReturnCode::Ok | ReturnCode::NotEnough => (),
                         ReturnCode::NotInRange => {
                             // If creep has a little bit of energy, use the last of it
                             if creep.store_used_capacity(Some(ResourceType::Energy)) > 0 {
