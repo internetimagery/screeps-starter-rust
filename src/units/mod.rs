@@ -15,6 +15,9 @@ mod clumsy;
 mod gatherer;
 mod upgrader;
 
+// Specialized Units
+mod miner;
+
 // Common fields
 const ROLE: &'static str = "role";
 const SPAWN: &'static str = "spawn";
@@ -27,6 +30,7 @@ pub enum UnitTypes {
     Gatherer = 1,
     Upgrader = 2,
     Builder = 3,
+    Miner = 4,
 }
 
 // Required functionality of a controller
@@ -54,6 +58,7 @@ impl From<i32> for Unit {
                 x if x == UnitTypes::Upgrader as i32 => Box::new(upgrader::Upgrader {}),
                 x if x == UnitTypes::Gatherer as i32 => Box::new(gatherer::Gatherer {}),
                 x if x == UnitTypes::Builder as i32 => Box::new(builder::Builder {}),
+                x if x == UnitTypes::Miner as i32 => Box::new(miner::Miner {}),
                 _ => Box::new(clumsy::Clumsy {}),
             },
         }
@@ -145,11 +150,13 @@ pub trait CreepRole {
 }
 
 impl CreepRole for Creep {
+    // TODO: How can this conversion be automatic?
     fn get_role(&self) -> UnitTypes {
         match self.memory().i32(ROLE) {
             Ok(Some(c)) if c == UnitTypes::Upgrader as i32 => UnitTypes::Upgrader,
             Ok(Some(c)) if c == UnitTypes::Gatherer as i32 => UnitTypes::Gatherer,
             Ok(Some(c)) if c == UnitTypes::Builder as i32 => UnitTypes::Builder,
+            Ok(Some(c)) if c == UnitTypes::Miner as i32 => UnitTypes::Miner,
             _ => UnitTypes::Zombie,
         }
     }

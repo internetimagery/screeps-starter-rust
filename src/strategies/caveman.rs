@@ -1,6 +1,6 @@
 // Starting from nothing. Build some basic units to gather materials and upgrade equally
 use crate::strategies::{StrategyController, UnitSpawn};
-use crate::units::{SpawnTeam, CreepRole, Unit, UnitTypes::*};
+use crate::units::{CreepRole, SpawnTeam, Unit, UnitTypes::*};
 use log::*;
 use screeps::objects::StructureSpawn;
 use screeps::prelude::*;
