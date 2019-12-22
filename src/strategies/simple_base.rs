@@ -3,8 +3,8 @@
 use crate::strategies::StrategyController;
 use screeps::objects::StructureSpawn;
 
-pub struct BasicDefense {}
+pub struct SimpleBase {}
 
-impl StrategyController for BasicDefense {
+impl StrategyController for SimpleBase {
     fn recruit(&self, _: &StructureSpawn) {}
 }

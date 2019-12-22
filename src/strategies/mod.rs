@@ -9,7 +9,7 @@ use crate::game_loop::StrategySpawn;
 use log::*;
 use screeps::objects::StructureSpawn;
 
-mod basic_defense;
+mod simple_base;
 mod caveman;
 
 // Allow units to spawn
@@ -31,7 +31,7 @@ pub struct Strategy {
 impl From<&StructureSpawn> for Strategy {
     fn from(_: &StructureSpawn) -> Self {
         let strategy_chain = caveman::Caveman {
-            next: Some(Box::new(basic_defense::BasicDefense {})),
+            next: Some(Box::new(simple_base::SimpleBase {})),
         };
         Strategy {
             controller: Box::new(strategy_chain),
