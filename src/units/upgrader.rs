@@ -43,58 +43,12 @@ impl UnitController for Upgrader {
                             if creep.store_used_capacity(Some(ResourceType::Energy)) > 0 {
                                 creep.move_to(&controller.unwrap());
                             }
-                        },
+                        }
                         x => warn!("Failed to upgrade controller: {:?}", x),
                     }
                 }
             }
             x => warn!("Failed to harvest: {:?}", x),
         }
-        //
-        // if creep.store_free_capacity(Some(ResourceType::Energy)) == 0 {
-        //     // Full Go to the controller!
-        // } else if creep.store_used_capacity(Some(ResourceType::Energy)) == 0 {
-        //     // Empty, go find some energy!
-        // }
-        //
-        // if let Some(c) = creep.room().controller() {
-        //     match creep.upgrade_controller(&c) {
-        //         ReturnCode::NotInRange => {
-        //             creep.move_to(&c);
-        //         }
-        //         ReturnCode::Ok => (), // Success
-        //         x => warn!("Failed to upgrade controller: {:?}", x),
-        //     }
-        // } else {
-        //     warn!("Room has no controller!");
-        // }
-        //
-        //
-        // // Check if our creep is full of energy and head off to upgrade if so
-        // if creep.store_free_capacity(Some(ResourceType::Energy)) == 0 {
-        //     if let Some(c) = creep.room().controller() {
-        //         match creep.upgrade_controller(&c) {
-        //             ReturnCode::NotInRange => {
-        //                 creep.move_to(&c);
-        //             }
-        //             ReturnCode::Ok => (), // Success
-        //             x => warn!("Failed to upgrade controller: {:?}", x),
-        //         }
-        //     } else {
-        //         warn!("Room has no controller!");
-        //     }
-        // } else {
-        //     // We have no energy, go get some more
-        //     let source = &creep.room().find(find::SOURCES)[0];
-        //     match creep.harvest(source) {
-        //         ReturnCode::NotInRange => {
-        //             creep.move_to(source);
-        //         }
-        //         ReturnCode::Ok => {
-        //             creep.say("⏳", true);
-        //         }
-        //         x => warn!("Failed to harvest: {:?}", x),
-        //     }
-        // }
     }
 }

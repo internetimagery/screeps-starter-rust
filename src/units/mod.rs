@@ -3,7 +3,8 @@
 use log::*;
 use screeps::memory::MemoryReference;
 use screeps::objects::{Creep, SpawnOptions, StructureSpawn};
-use screeps::{game, prelude::*, Part, ReturnCode};
+use screeps::{game, prelude::*, ObjectId, Part, ReturnCode};
+use std::str::FromStr;
 
 use crate::game_loop::UnitCreep;
 use crate::strategies::UnitSpawn;
@@ -14,9 +15,9 @@ mod gatherer;
 mod upgrader;
 
 // Common fields
-const ROLE: &'static str = "role";
-const SPAWN: &'static str = "spawn";
-const STATE: &'static str = "state";
+pub const ROLE: &'static str = "role";
+pub const SPAWN: &'static str = "spawn";
+pub const STATE: &'static str = "state";
 
 // Unit type ID's
 #[derive(Copy, Clone)]
@@ -72,6 +73,23 @@ impl From<&Creep> for Unit {
     }
 }
 
+trait CreepSpawn {
+    fn get_spawn(&self) -> Option<StructureSpawn>;
+}
+
+impl CreepSpawn for Creep {
+    fn get_spawn(&self) -> Option<StructureSpawn> {
+        if let Ok(Some(id)) = self.memory().string(SPAWN) {
+            if let Ok(object_id) = ObjectId::from_str(&id) {
+                if let Ok(spawn) = object_id.try_resolve() {
+                    return spawn;
+                }
+            }
+        }
+        None
+    }
+}
+
 // Create a new creep
 impl UnitSpawn for Unit {
     fn create(&self, spawn: &StructureSpawn) -> Option<String> {
@@ -79,7 +97,7 @@ impl UnitSpawn for Unit {
         let body = self.controller.get_body();
         let memory = self.controller.get_memory();
         memory.set(ROLE, self.unit_type);
-        memory.set(SPAWN, &*spawn.id().to_array_string());
+        memory.set(SPAWN, spawn.id().to_string());
         memory.set(STATE, 0);
 
         let mut index = game::time();

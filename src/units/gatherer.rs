@@ -1,11 +1,11 @@
-// Super simple cheap unit to gather energy and return it to the spawn.
-// What a boring life... Good starter unit though! :)
+// Grab some energy and give it out to everyone.
+// Simple cheap starter unit
 
 use log::*;
 use screeps::objects::Creep;
 use screeps::{find, prelude::*, Part, ResourceType, ReturnCode};
 
-use crate::units::UnitController;
+use crate::units::{CreepSpawn, UnitController};
 
 pub struct Gatherer {}
 
@@ -17,38 +17,38 @@ impl UnitController for Gatherer {
         &[Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
-        if creep.memory().bool("harvesting") {
-            if creep.store_free_capacity(Some(ResourceType::Energy)) == 0 {
-                creep.memory().set("harvesting", false);
-            }
-        } else {
-            if creep.store_used_capacity(None) == 0 {
-                creep.memory().set("harvesting", true);
-            }
+        let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
+        let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
+        let source = &creep.room().find(find::SOURCES)[0];
+        let spawn = creep.get_spawn();
+
+        // Go get some energy or upgrade
+        if empty {
+            creep.move_to(source);
+        } else if full && spawn.is_some() {
+            creep.move_to(spawn.as_ref().unwrap());
         }
 
-        if creep.memory().bool("harvesting") {
-            let source = &creep.room().find(find::SOURCES)[0];
-            if creep.pos().is_near_to(source) {
+        // Harvest or transfer
+        match creep.harvest(source) {
+            ReturnCode::Ok => {
                 creep.say("⏳", true);
-                let r = creep.harvest(source);
-                if r != ReturnCode::Ok {
-                    warn!("couldn't harvest: {:?}", r);
-                }
-            } else {
-                creep.move_to(source);
             }
-        } else {
-            if let Some(c) = creep.room().controller() {
-                let r = creep.upgrade_controller(&c);
-                if r == ReturnCode::NotInRange {
-                    creep.move_to(&c);
-                } else if r != ReturnCode::Ok {
-                    warn!("couldn't upgrade: {:?}", r);
+            ReturnCode::NotInRange => {
+                if spawn.is_some() {
+                    match creep.transfer_all(spawn.as_ref().unwrap(), ResourceType::Energy) {
+                        ReturnCode::Ok | ReturnCode::NotEnough => (),
+                        ReturnCode::NotInRange => {
+                            // If creep has a little bit of energy, use the last of it
+                            if creep.store_used_capacity(Some(ResourceType::Energy)) > 0 {
+                                creep.move_to(&spawn.unwrap());
+                            }
+                        }
+                        x => warn!("Failed to upgrade controller: {:?}", x),
+                    }
                 }
-            } else {
-                warn!("creep room has no controller!");
             }
+            x => warn!("Failed to harvest: {:?}", x),
         }
     }
 }
