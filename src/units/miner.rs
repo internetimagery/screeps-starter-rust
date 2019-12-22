@@ -19,6 +19,7 @@ impl UnitController for Miner {
     fn control_creep(&self, creep: &Creep) {
         let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
         let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
+        // TODO: distribute miners evenly among sources
         let source = &creep.room().find(find::SOURCES)[0];
         let creeps = creep
             .room()

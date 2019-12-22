@@ -5,7 +5,7 @@ use log::*;
 use screeps::objects::Creep;
 use screeps::{find, game, prelude::*, Part, ResourceType, ReturnCode};
 
-use crate::units::upgrader::Upgrader;
+use crate::units::gatherer::Gatherer;
 use crate::units::UnitController;
 
 pub struct Builder {}
@@ -31,9 +31,9 @@ impl UnitController for Builder {
         //     })
         //     .collect::<Vec<_>>();
 
-        // There is nothing to build. Help out with upgrading
-        if constructions.len() == 0 {
-            Upgrader {}.control_creep(creep);
+        // There is nothing to build. Help out with gathering
+        if empty || constructions.len() == 0 {
+            Gatherer {}.control_creep(creep);
             return;
         }
         // let construction = constructions
@@ -46,10 +46,7 @@ impl UnitController for Builder {
             .min_by_key(|c| c.pos().get_range_to(&my_pos))
             .unwrap();
 
-        // Go get some energy or build
-        if empty {
-            creep.move_to(source);
-        } else if full {
+        if full {
             creep.move_to(&construction);
         }
 
