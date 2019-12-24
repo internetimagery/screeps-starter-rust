@@ -1,7 +1,7 @@
 // Common traits for useful abstractions
 use crate::units::{UnitTypes, ROLE, SPAWN};
-use screeps::objects::{Creep, StructureSpawn};
-use screeps::{game, prelude::*, ObjectId, ResourceType};
+use screeps::objects::{Creep, Source, StructureSpawn};
+use screeps::{find, game, prelude::*, ObjectId, ResourceType};
 use std::str::FromStr;
 
 pub trait CreepExtras {
@@ -9,6 +9,7 @@ pub trait CreepExtras {
     fn get_role(&self) -> UnitTypes;
     fn is_full(&self) -> bool;
     fn is_empty(&self) -> bool;
+    fn nearest_source(&self) -> Source;
 }
 
 impl CreepExtras for Creep {
@@ -41,6 +42,15 @@ impl CreepExtras for Creep {
     // Return true if creep has no energy
     fn is_empty(&self) -> bool {
         self.store_used_capacity(Some(ResourceType::Energy)) == 0
+    }
+    // Look for the nearest source
+    fn nearest_source(&self) -> Source {
+        let my_pos = self.pos();
+        self.room()
+            .find(find::SOURCES)
+            .into_iter()
+            .min_by_key(|s| s.pos().get_range_to(&my_pos))
+            .unwrap()
     }
 }
 

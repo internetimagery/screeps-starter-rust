@@ -3,9 +3,9 @@
 
 use log::*;
 use screeps::objects::Creep;
-use screeps::{find, prelude::*, Part, ResourceType, ReturnCode};
+use screeps::{prelude::*, Part, ResourceType, ReturnCode};
 
-use crate::units::UnitController;
+use crate::units::{prelude::*, UnitController};
 
 pub struct Upgrader {}
 
@@ -20,18 +20,18 @@ impl UnitController for Upgrader {
     fn control_creep(&self, creep: &Creep) {
         let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
         let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
-        let source = &creep.room().find(find::SOURCES)[0];
+        let source = creep.nearest_source();
         let controller = creep.room().controller();
 
         // Go get some energy or upgrade
         if empty {
-            creep.move_to(source);
+            creep.move_to(&source);
         } else if full && controller.is_some() {
             creep.move_to(controller.as_ref().unwrap());
         }
 
         // Harvest or upgrade
-        match creep.harvest(source) {
+        match creep.harvest(&source) {
             ReturnCode::Ok => {
                 creep.say("⏳", true);
             }

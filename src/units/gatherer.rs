@@ -19,8 +19,8 @@ impl UnitController for Gatherer {
         &[Part::Move, Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
+        let empty = creep.is_empty();
         let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
-        let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
         let spawn = creep.get_spawn();
 
         // If empty or the spawn is already full, perform the task of an upgrader

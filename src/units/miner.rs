@@ -5,7 +5,7 @@ use log::*;
 use screeps::objects::Creep;
 use screeps::{find, prelude::*, Part, ResourceType, ReturnCode};
 
-use crate::units::UnitController;
+use crate::units::{prelude::*, UnitController};
 
 pub struct Miner {}
 
@@ -20,7 +20,7 @@ impl UnitController for Miner {
         let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
         let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
         // TODO: distribute miners evenly among sources
-        let source = &creep.room().find(find::SOURCES)[0];
+        let source = creep.nearest_source();
         let creeps = creep
             .room()
             .find(find::CREEPS)
@@ -42,11 +42,11 @@ impl UnitController for Miner {
         if full {
             creep.move_to(&closest_creep);
         } else {
-            creep.move_to(source);
+            creep.move_to(&source);
         }
 
         // Harvest or transfer
-        match creep.harvest(source) {
+        match creep.harvest(&source) {
             ReturnCode::Ok => {
                 creep.say("⏳", true);
             }
