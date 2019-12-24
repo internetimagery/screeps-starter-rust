@@ -3,8 +3,7 @@
 use log::*;
 use screeps::memory::MemoryReference;
 use screeps::objects::{Creep, SpawnOptions, StructureSpawn};
-use screeps::{game, prelude::*, ObjectId, Part, ReturnCode};
-use std::str::FromStr;
+use screeps::{game, prelude::*, Part, ReturnCode};
 
 use crate::game_loop::UnitCreep;
 use crate::strategies::UnitSpawn;
@@ -13,6 +12,7 @@ use crate::strategies::UnitSpawn;
 mod builder;
 mod clumsy;
 mod gatherer;
+pub mod prelude;
 mod upgrader;
 
 // Specialized Units
@@ -82,23 +82,6 @@ impl From<&Creep> for Unit {
     }
 }
 
-pub trait CreepSpawn {
-    fn get_spawn(&self) -> Option<StructureSpawn>;
-}
-
-impl CreepSpawn for Creep {
-    fn get_spawn(&self) -> Option<StructureSpawn> {
-        if let Ok(Some(id)) = self.memory().string(SPAWN) {
-            if let Ok(object_id) = ObjectId::from_str(&id) {
-                if let Ok(spawn) = object_id.try_resolve() {
-                    return spawn;
-                }
-            }
-        }
-        None
-    }
-}
-
 // Create a new creep
 impl UnitSpawn for Unit {
     fn create(&self, spawn: &StructureSpawn) -> Option<String> {
@@ -141,44 +124,5 @@ impl UnitCreep for Unit {
 impl Unit {
     pub fn cost(&self) -> u32 {
         self.controller.get_body().iter().map(|p| p.cost()).sum()
-    }
-}
-
-// Get the role a creep has
-pub trait CreepRole {
-    fn get_role(&self) -> UnitTypes;
-}
-
-impl CreepRole for Creep {
-    // TODO: How can this conversion be automatic?
-    fn get_role(&self) -> UnitTypes {
-        match self.memory().i32(ROLE) {
-            Ok(Some(c)) if c == UnitTypes::Upgrader as i32 => UnitTypes::Upgrader,
-            Ok(Some(c)) if c == UnitTypes::Gatherer as i32 => UnitTypes::Gatherer,
-            Ok(Some(c)) if c == UnitTypes::Builder as i32 => UnitTypes::Builder,
-            Ok(Some(c)) if c == UnitTypes::Miner as i32 => UnitTypes::Miner,
-            _ => UnitTypes::Zombie,
-        }
-    }
-}
-
-// Get creeps attached to this spawn
-pub trait SpawnTeam {
-    fn get_team(&self) -> Vec<Creep>;
-}
-
-// Get our team!
-impl SpawnTeam for StructureSpawn {
-    fn get_team(&self) -> Vec<Creep> {
-        let team_id = self.id().to_string();
-        let mut creeps = vec![];
-        for creep in game::creeps::values() {
-            if let Ok(Some(check_id)) = creep.memory().string(SPAWN) {
-                if check_id == team_id {
-                    creeps.push(creep);
-                }
-            }
-        }
-        creeps
     }
 }
