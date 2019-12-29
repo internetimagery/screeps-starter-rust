@@ -4,7 +4,7 @@
 use crate::units::upgrader::Upgrader;
 use log::*;
 use screeps::objects::Creep;
-use screeps::{prelude::*, Part, ResourceType, ReturnCode};
+use screeps::{Part, ResourceType, ReturnCode};
 
 use crate::units::{prelude::*, UnitController};
 
@@ -19,38 +19,25 @@ impl UnitController for Gatherer {
         &[Part::Move, Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
-        let empty = creep.is_empty();
-        let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
-        let spawn = creep.get_spawn();
-
-        // If empty or the spawn is already full, perform the task of an upgrader
-        if empty
-            || (spawn.is_some()
-                && spawn
-                    .as_ref()
-                    .unwrap()
-                    .store_free_capacity(Some(ResourceType::Energy))
-                    == 0)
-        {
-            Upgrader {}.control_creep(creep);
-            return;
+        // If creep is empty, defer to upgrader for harvesting logic
+        if creep.is_empty() {
+            return Upgrader {}.control_creep(creep);
         }
-
-        // Go give the spawn some energy
-        if spawn.is_some() {
-            if full {
-                creep.move_to(spawn.as_ref().unwrap());
+        // Get spawn. If we have no spawn, do some upgrades
+        let spawn = match creep.get_spawn() {
+            Some(spawn) => spawn,
+            _ => return Upgrader {}.control_creep(creep),
+        };
+        // Go give some energy
+        if creep.is_full() {
+            creep.move_to(&spawn);
+        }
+        match creep.transfer_all(&spawn, ResourceType::Energy) {
+            ReturnCode::Ok | ReturnCode::NotEnough => (),
+            ReturnCode::NotInRange => {
+                creep.move_to(&spawn); // Handle some energy but not full
             }
-            match creep.transfer_all(spawn.as_ref().unwrap(), ResourceType::Energy) {
-                ReturnCode::Ok | ReturnCode::NotEnough => (),
-                ReturnCode::NotInRange => {
-                    // If creep has a little bit of energy, use the last of it
-                    if creep.store_used_capacity(Some(ResourceType::Energy)) > 0 {
-                        creep.move_to(&spawn.unwrap());
-                    }
-                }
-                x => warn!("Failed to give spawn energy: {:?}", x),
-            }
+            x => warn!("Failed to give spawn energy: {:?}", x),
         }
     }
 }

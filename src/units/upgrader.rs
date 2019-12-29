@@ -1,9 +1,10 @@
 // Grab some energy (like gatherer) and go do some upgrades.
 // Simple cheap starter unit
+// Used eventually as a fallback for gatherers
 
 use log::*;
 use screeps::objects::Creep;
-use screeps::{prelude::*, Part, ResourceType, ReturnCode};
+use screeps::{game, prelude::*, Part, ResourceType, ReturnCode};
 
 use crate::units::{prelude::*, UnitController};
 
@@ -18,22 +19,22 @@ impl UnitController for Upgrader {
         &[Part::Move, Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
-        let full = creep.store_free_capacity(Some(ResourceType::Energy)) == 0;
-        let empty = creep.store_used_capacity(Some(ResourceType::Energy)) == 0;
         let source = creep.nearest_source();
         let controller = creep.room().controller();
 
-        // Go get some energy or upgrade
-        if empty {
+        // Move to source or controller
+        if creep.is_empty() {
             creep.move_to(&source);
-        } else if full && controller.is_some() {
+        } else if creep.is_full() && controller.is_some() {
             creep.move_to(controller.as_ref().unwrap());
         }
 
         // Harvest or upgrade
         match creep.harvest(&source) {
             ReturnCode::Ok => {
-                creep.say("⏳", true);
+                if game::time() % 5 == 0 {
+                    creep.say("⏳", true);
+                }
             }
             ReturnCode::NotInRange => {
                 if controller.is_some() {
