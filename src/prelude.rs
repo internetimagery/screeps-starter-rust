@@ -1,6 +1,6 @@
 // General utilities
 
-use screeps::objects::{Creep, Source};
+use screeps::objects::{Creep, Source, Structure};
 use screeps::{find, prelude::*, ResourceType};
 
 pub trait CreepExtras {
@@ -26,5 +26,19 @@ impl CreepExtras for Creep {
             .into_iter()
             .min_by_key(|s| s.pos().get_range_to(&my_pos))
             .unwrap()
+    }
+}
+
+pub trait StructureExtras {
+    fn needs_repair(&self) -> bool;
+}
+
+impl StructureExtras for Structure {
+    fn needs_repair(&self) -> bool {
+        if let Some(structure) = self.as_attackable() {
+            structure.hits_max() > structure.hits()
+        } else {
+            false
+        }
     }
 }
