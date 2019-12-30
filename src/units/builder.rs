@@ -1,6 +1,7 @@
 // Build and repair
 // Simple cheap starter unit
 
+use log::*;
 use screeps::objects::Creep;
 use screeps::{game, prelude::*, Part, ResourceType, ReturnCode};
 
@@ -34,7 +35,8 @@ impl UnitController for Builder {
                 ReturnCode::NotInRange => {
                     creep.move_to(&structure);
                 }
-                ReturnCode::Ok | _ => (),
+                ReturnCode::Ok => (),
+                x => warn!("Failed to build {:?}", x),
             }
             return;
         }
@@ -47,7 +49,8 @@ impl UnitController for Builder {
                 ReturnCode::NotInRange => {
                     creep.move_to(&construction);
                 }
-                ReturnCode::Ok | _ => (),
+                ReturnCode::Ok => (),
+                x => warn!("Failed to build {:?}", x),
             }
             return;
         }
