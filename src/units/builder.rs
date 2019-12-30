@@ -5,8 +5,10 @@ use log::*;
 use screeps::objects::Creep;
 use screeps::{game, prelude::*, Part, ResourceType, ReturnCode};
 
+use crate::actions::*;
+use crate::prelude::*;
 use crate::units::gatherer::Gatherer;
-use crate::units::{prelude::*, UnitController};
+use crate::units::UnitController;
 
 pub struct Builder {}
 
@@ -19,8 +21,11 @@ impl UnitController for Builder {
         &[Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
-        let full = creep.is_full();
-        let empty = creep.is_empty();
+        if creep.is_empty(ResourceType::Energy) {
+            return creep.set_action(Actions::HarvestEnergy);
+        }
+        let full = creep.is_full(ResourceType::Energy);
+        let empty = creep.is_empty(ResourceType::Energy);
         let source = creep.nearest_source();
         let constructions = game::construction_sites::values();
         // let constructions = game::structures::values()

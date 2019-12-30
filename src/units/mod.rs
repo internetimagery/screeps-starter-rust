@@ -21,7 +21,6 @@ mod miner;
 // Common fields
 const ROLE: &'static str = "role";
 const SPAWN: &'static str = "spawn";
-pub const STATE: &'static str = "state";
 
 // Unit type ID's
 #[derive(Copy, Clone)]
@@ -90,7 +89,6 @@ impl UnitSpawn for Unit {
         let memory = self.controller.get_memory();
         memory.set(ROLE, self.unit_type);
         memory.set(SPAWN, spawn.id().to_string());
-        memory.set(STATE, 0);
 
         let mut index = game::time();
         let spawn_options = SpawnOptions::new().memory(memory);

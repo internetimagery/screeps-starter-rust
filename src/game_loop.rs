@@ -1,3 +1,4 @@
+use crate::actions::CreepActions;
 use crate::strategies::Strategy;
 use crate::units::Unit;
 use log::*;
@@ -25,6 +26,9 @@ pub fn game_loop() {
     // Run our creeps AI
     for creep in game::creeps::values() {
         debug!("Running creep: {}", creep.name());
+        if creep.execute_action() {
+            continue;
+        }
         let unit = Unit::from(&creep);
         unit.think(&creep);
     }

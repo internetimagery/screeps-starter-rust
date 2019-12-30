@@ -1,7 +1,9 @@
 use stdweb::js;
 
+mod actions;
 mod game_loop;
 mod logging;
+mod prelude;
 mod strategies;
 mod units;
 

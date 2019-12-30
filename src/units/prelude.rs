@@ -1,18 +1,15 @@
-// Common traits for useful abstractions
+// Common Unit traits for useful abstractions
 use crate::units::{UnitTypes, ROLE, SPAWN};
-use screeps::objects::{Creep, Source, StructureSpawn};
-use screeps::{find, game, prelude::*, ObjectId, ResourceType};
+use screeps::objects::{Creep, StructureSpawn};
+use screeps::{game, prelude::*, ObjectId};
 use std::str::FromStr;
 
-pub trait CreepExtras {
+pub trait CreepUnitExtras {
     fn get_spawn(&self) -> Option<StructureSpawn>;
     fn get_role(&self) -> UnitTypes;
-    fn is_full(&self) -> bool;
-    fn is_empty(&self) -> bool;
-    fn nearest_source(&self) -> Source;
 }
 
-impl CreepExtras for Creep {
+impl CreepUnitExtras for Creep {
     // Get associated spawn point from stored ID
     fn get_spawn(&self) -> Option<StructureSpawn> {
         if let Ok(Some(id)) = self.memory().string(SPAWN) {
@@ -35,30 +32,13 @@ impl CreepExtras for Creep {
             _ => UnitTypes::Zombie,
         }
     }
-    // Return true if creep is full of energy
-    fn is_full(&self) -> bool {
-        self.store_free_capacity(Some(ResourceType::Energy)) == 0
-    }
-    // Return true if creep has no energy
-    fn is_empty(&self) -> bool {
-        self.store_used_capacity(Some(ResourceType::Energy)) == 0
-    }
-    // Look for the nearest source
-    fn nearest_source(&self) -> Source {
-        let my_pos = self.pos();
-        self.room()
-            .find(find::SOURCES)
-            .into_iter()
-            .min_by_key(|s| s.pos().get_range_to(&my_pos))
-            .unwrap()
-    }
 }
 
-pub trait SpawnExtras {
+pub trait SpawnUnitExtras {
     fn get_team(&self) -> Vec<Creep>;
 }
 
-impl SpawnExtras for StructureSpawn {
+impl SpawnUnitExtras for StructureSpawn {
     // Get creeps associated with this spawn
     fn get_team(&self) -> Vec<Creep> {
         let team_id = self.id().to_string();

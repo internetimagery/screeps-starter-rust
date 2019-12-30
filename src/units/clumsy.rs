@@ -15,7 +15,7 @@ impl UnitController for Clumsy {
         &[Part::Move]
     }
     fn control_creep(&self, creep: &Creep) {
-        creep.say("Oh I seem to have tripped on a bannana peel!", true);
+        creep.say("Oh what a world!", true);
         creep.suicide();
     }
 }
