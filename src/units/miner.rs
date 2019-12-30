@@ -28,7 +28,7 @@ impl UnitController for Miner {
             .room()
             .find(find::CREEPS)
             .into_iter()
-            .filter(|c| c != creep && !c.is_full(ResourceType::Energy))
+            .filter(|c| !c.name().starts_with("Miner") && !c.is_full(ResourceType::Energy))
             .min_by_key(|c| c.pos().get_range_to(&my_pos))
         {
             match creep.transfer_all(&nearby_creep, ResourceType::Energy) {
