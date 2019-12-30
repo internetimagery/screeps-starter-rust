@@ -15,7 +15,7 @@ pub trait UnitCreep {
 }
 
 pub fn game_loop() {
-    info!(">>> Loop starting! cpu: {}", game::cpu::get_used());
+    let starting_cpu = game::cpu::get_used();
 
     // Spawn some units (maybe)
     for spawn in game::spawns::values() {
@@ -36,7 +36,7 @@ pub fn game_loop() {
     // Be a good citizen
     run_cleanup();
 
-    info!("<<< Done! cpu: {}", game::cpu::get_used())
+    info!("Tick took cpu: {}", game::cpu::get_used() - starting_cpu);
 }
 
 pub fn run_cleanup() {
