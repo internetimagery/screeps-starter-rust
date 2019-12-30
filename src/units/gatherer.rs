@@ -27,7 +27,7 @@ impl UnitController for Gatherer {
         // Get spawn. If we have no spawn, do some upgrades
         if let Some(spawn) = creep.get_spawn() {
             match creep.transfer_all(&spawn, ResourceType::Energy) {
-                ReturnCode::Ok | ReturnCode::NotEnough => (),
+                ReturnCode::Ok | ReturnCode::NotEnough | ReturnCode::Full => (),
                 ReturnCode::NotInRange => {
                     creep.move_to(&spawn); // Handle some energy but not full
                 }

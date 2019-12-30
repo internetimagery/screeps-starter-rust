@@ -32,7 +32,7 @@ impl UnitController for Miner {
             .min_by_key(|c| c.pos().get_range_to(&my_pos))
         {
             match creep.transfer_all(&nearby_creep, ResourceType::Energy) {
-                ReturnCode::Ok | ReturnCode::NotEnough => (),
+                ReturnCode::Ok | ReturnCode::NotEnough | ReturnCode::Full => (),
                 ReturnCode::NotInRange => {
                     creep.move_to(&nearby_creep);
                 }
