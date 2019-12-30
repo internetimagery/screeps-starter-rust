@@ -25,16 +25,16 @@ impl UnitController for Gatherer {
             return creep.set_action(Actions::HarvestEnergy);
         }
         // Get spawn. If we have no spawn, do some upgrades
-        let spawn = match creep.get_spawn() {
-            Some(spawn) => spawn,
-            _ => return Upgrader {}.control_creep(creep),
-        };
-        match creep.transfer_all(&spawn, ResourceType::Energy) {
-            ReturnCode::Ok | ReturnCode::NotEnough => (),
-            ReturnCode::NotInRange => {
-                creep.move_to(&spawn); // Handle some energy but not full
+        if let Some(spawn) = creep.get_spawn() {
+            match creep.transfer_all(&spawn, ResourceType::Energy) {
+                ReturnCode::Ok | ReturnCode::NotEnough => (),
+                ReturnCode::NotInRange => {
+                    creep.move_to(&spawn); // Handle some energy but not full
+                }
+                x => warn!("Failed to give spawn energy: {:?}", x),
             }
-            x => warn!("Failed to give spawn energy: {:?}", x),
+        } else {
+            Upgrader {}.control_creep(creep)
         }
     }
 }
