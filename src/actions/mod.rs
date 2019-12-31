@@ -2,15 +2,16 @@
 
 use screeps::Creep;
 
+use crate::reversable_enum;
+
 mod transport;
 
 const ACTION: &'static str = "action";
 
-#[derive(Copy, Clone)]
-pub enum Actions {
+reversable_enum! {Actions, i32, {
     None = 0,
     HarvestEnergy = 1,
-}
+}}
 
 pub trait CreepActions {
     // Run an action if one exists. Return true if the action needs more turns to complete

@@ -6,6 +6,7 @@ use screeps::objects::{Creep, SpawnOptions, StructureSpawn};
 use screeps::{game, prelude::*, Part, ReturnCode};
 
 use crate::game_loop::UnitCreep;
+use crate::reversable_enum;
 use crate::strategies::UnitSpawn;
 
 // Basic Units
@@ -23,14 +24,13 @@ const ROLE: &'static str = "role";
 const SPAWN: &'static str = "spawn";
 
 // Unit type ID's
-#[derive(Copy, Clone)]
-pub enum UnitTypes {
+reversable_enum! {UnitTypes, i32, {
     Zombie = 0,
     Gatherer = 1,
     Upgrader = 2,
     Builder = 3,
     Miner = 4,
-}
+}}
 
 // Required functionality of a controller
 pub trait UnitController {

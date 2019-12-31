@@ -2,6 +2,7 @@
 use crate::units::{UnitTypes, ROLE, SPAWN};
 use screeps::objects::{Creep, StructureSpawn};
 use screeps::{game, prelude::*, ObjectId};
+use std::convert::TryFrom;
 use std::str::FromStr;
 
 pub trait CreepUnitExtras {
@@ -22,15 +23,13 @@ impl CreepUnitExtras for Creep {
         None
     }
     // Get role of creep.
-    // TODO: How can this conversion be automatic?
     fn get_role(&self) -> UnitTypes {
-        match self.memory().i32(ROLE) {
-            Ok(Some(c)) if c == UnitTypes::Upgrader as i32 => UnitTypes::Upgrader,
-            Ok(Some(c)) if c == UnitTypes::Gatherer as i32 => UnitTypes::Gatherer,
-            Ok(Some(c)) if c == UnitTypes::Builder as i32 => UnitTypes::Builder,
-            Ok(Some(c)) if c == UnitTypes::Miner as i32 => UnitTypes::Miner,
-            _ => UnitTypes::Zombie,
+        if let Ok(Some(role)) = self.memory().i32(ROLE) {
+            if let Ok(unit_type) = UnitTypes::try_from(role) {
+                return unit_type;
+            }
         }
+        UnitTypes::Zombie
     }
 }
 

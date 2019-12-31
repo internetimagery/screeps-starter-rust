@@ -3,6 +3,26 @@
 use screeps::objects::{Creep, Source, Structure};
 use screeps::{find, prelude::*, ResourceType};
 
+// Enum that includes the ability to get it back by value
+#[macro_export]
+macro_rules! reversable_enum {
+    ($enum_name: ident, $enum_type: ty, {$($name: ident = $value: expr,)+}) => {
+        #[derive(Copy, Clone)]
+        pub enum $enum_name {
+            $($name = $value,)+
+        }
+        impl std::convert::TryFrom<$enum_type> for $enum_name {
+            type Error = String;
+            fn try_from(value: $enum_type) -> Result<Self, Self::Error> {
+                match value {
+                    $($value => Ok($enum_name::$name), )+
+                    _ => Err(format!("Unrecognized value {}", value)),
+                }
+            }
+        }
+    }
+}
+
 pub trait CreepExtras {
     fn is_full(&self, res: ResourceType) -> bool;
     fn is_empty(&self, res: ResourceType) -> bool;
