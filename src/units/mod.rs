@@ -94,16 +94,22 @@ impl UnitSpawn for Unit {
         let spawn_options = SpawnOptions::new().memory(memory);
         loop {
             let creep_id = format!("{}-{}", name, index);
-            let result = spawn.spawn_creep_with_options(&body, &creep_id, &spawn_options);
-            if result == ReturnCode::NameExists {
-                index += 1;
-                continue;
+            match spawn.spawn_creep_with_options(&body, &creep_id, &spawn_options) {
+                ReturnCode::NameExists => {
+                    index += 1;
+                    continue;
+                }
+                ReturnCode::Busy => {
+                    return None;
+                }
+                ReturnCode::Ok => {
+                    break Some(creep_id);
+                }
+                x => {
+                    warn!("Failed to spawn {}: {:?}", name, x);
+                    return None;
+                }
             }
-            if result != ReturnCode::Ok {
-                warn!("Failed to spawn {}: {:?}", name, result);
-                return None;
-            }
-            break Some(creep_id);
         }
     }
 }
