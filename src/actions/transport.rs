@@ -1,22 +1,21 @@
 // Actions relating to transporting goods from one place to another. eg energy
 
+use crate::actions::{Action, Actionable};
 use crate::prelude::*;
 use log::*;
 use screeps::{game, Creep, ResourceType, ReturnCode};
-use crate::actions::{Actionable, Action};
-
 
 pub struct HarvestEnergy {}
 
 impl Action {
     pub fn harvest_energy() -> Action {
-        Action::HarvestEnergy(HarvestEnergy{})
+        Action::HarvestEnergy(HarvestEnergy {})
     }
 }
 
 impl Actionable for HarvestEnergy {
     fn load(_: &Creep) -> Self {
-        Self{}
+        Self {}
     }
     fn execute(&self, creep: &Creep) -> bool {
         if creep.is_full(ResourceType::Energy) {

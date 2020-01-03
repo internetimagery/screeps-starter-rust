@@ -1,8 +1,7 @@
 // Simple repeditive actions
 
 use screeps::Creep;
-use std::convert::{TryFrom, From};
-
+use std::convert::{From, TryFrom};
 
 pub mod transport;
 
@@ -56,7 +55,7 @@ macro_rules! ActionIDs {
     }
 }
 
-// Match actions with their IDs
+// Match actions with their associated logic and serialized IDs
 ActionIDs! {
     HarvestEnergy => transport::HarvestEnergy = 1,
 }
@@ -72,7 +71,7 @@ pub trait CreepActions {
 impl CreepActions for Creep {
     fn execute_action(&self) -> bool {
         if let Ok(action) = Action::try_from(self) {
-            if action.execute(&self) {
+            if action.execute(self) {
                 return true;
             }
             self.memory().set(ACTION, 0);
@@ -81,6 +80,6 @@ impl CreepActions for Creep {
     }
     fn set_action(&self, action: Action) {
         self.memory().set(ACTION, i32::from(&action));
-        action.save(&self);
+        action.save(self);
     }
 }
