@@ -6,7 +6,6 @@ use screeps::objects::Creep;
 use screeps::{game, prelude::*, Part, ResourceType, ReturnCode};
 
 use crate::actions::*;
-use crate::actions::transport::HarvestEnergy;
 use crate::prelude::*;
 use crate::units::gatherer::Gatherer;
 use crate::units::UnitController;
@@ -23,7 +22,7 @@ impl UnitController for Builder {
     }
     fn control_creep(&self, creep: &Creep) {
         if creep.is_empty(ResourceType::Energy) {
-            return creep.set_action(HarvestEnergy::new());
+            return creep.set_action(Action::harvest_energy());
         }
         let my_pos = creep.pos();
         if let Some(structure) = game::structures::values()
@@ -32,7 +31,7 @@ impl UnitController for Builder {
             .min_by_key(|s| s.pos().get_range_to(&my_pos))
         {
             match creep.repair(&structure) {
-                ReturnCode::NotEnough => creep.set_action(HarvestEnergy::new()),
+                ReturnCode::NotEnough => creep.set_action(Action::harvest_energy()),
                 ReturnCode::NotInRange => {
                     creep.move_to(&structure);
                 }
@@ -46,7 +45,7 @@ impl UnitController for Builder {
             .min_by_key(|c| c.pos().get_range_to(&my_pos))
         {
             match creep.build(&construction) {
-                ReturnCode::NotEnough => creep.set_action(HarvestEnergy::new()),
+                ReturnCode::NotEnough => creep.set_action(Action::harvest_energy()),
                 ReturnCode::NotInRange => {
                     creep.move_to(&construction);
                 }

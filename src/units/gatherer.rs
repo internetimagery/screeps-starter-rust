@@ -7,7 +7,6 @@ use screeps::objects::Creep;
 use screeps::{Part, ResourceType, ReturnCode};
 
 use crate::actions::*;
-use crate::actions::transport::HarvestEnergy;
 use crate::prelude::*;
 use crate::units::{prelude::*, UnitController};
 
@@ -23,7 +22,7 @@ impl UnitController for Gatherer {
     }
     fn control_creep(&self, creep: &Creep) {
         if creep.is_empty(ResourceType::Energy) {
-            return creep.set_action(HarvestEnergy::new());
+            return creep.set_action(Action::harvest_energy());
         }
         // Get spawn. If we have no spawn, do some upgrades
         if let Some(spawn) = creep.get_spawn() {

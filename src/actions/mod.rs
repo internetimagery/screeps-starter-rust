@@ -10,7 +10,7 @@ const ACTION: &'static str = "action";
 
 pub trait Actionable {
     fn load(creep: &Creep) -> Self;
-    fn save(&self, creep: &Creep) {}
+    fn save(&self, _: &Creep) {}
     fn execute(&self, creep: &Creep) -> bool;
 }
 
@@ -33,8 +33,8 @@ macro_rules! ActionIDs {
             }
         }
 
-        impl std::convert::From<Action> for i32 {
-            fn from(value: Action) -> Self {
+        impl std::convert::From<&Action> for i32 {
+            fn from(value: &Action) -> Self {
                 match value {
                     $(Action::$name(_) => $value,)+
                 }
@@ -80,7 +80,7 @@ impl CreepActions for Creep {
         false
     }
     fn set_action(&self, action: Action) {
-        self.memory().set(ACTION, i32::from(action));
+        self.memory().set(ACTION, i32::from(&action));
         action.save(&self);
     }
 }

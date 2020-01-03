@@ -3,19 +3,22 @@
 use crate::prelude::*;
 use log::*;
 use screeps::{game, Creep, ResourceType, ReturnCode};
-use crate::actions::Actionable;
+use crate::actions::{Actionable, Action};
 
 
 pub struct HarvestEnergy {}
 
-impl HarvestEnergy {
-    pub fn new() -> Self {
-        Self{}
+impl Action {
+    pub fn harvest_energy() -> Action {
+        Action::HarvestEnergy(HarvestEnergy{})
     }
 }
 
 impl Actionable for HarvestEnergy {
-    fn execute(creep: &Creep) -> bool {
+    fn load(_: &Creep) -> Self {
+        Self{}
+    }
+    fn execute(&self, creep: &Creep) -> bool {
         if creep.is_full(ResourceType::Energy) {
             return false;
         }
