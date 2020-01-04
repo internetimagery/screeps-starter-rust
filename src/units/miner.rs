@@ -6,7 +6,8 @@ use log::*;
 use screeps::objects::Creep;
 use screeps::{find, prelude::*, Part, ResourceType, ReturnCode};
 
-use crate::actions::*;
+use crate::actions::prelude::*;
+use crate::actions::Action;
 
 use crate::units::UnitController;
 
