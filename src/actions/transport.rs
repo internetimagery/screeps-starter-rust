@@ -23,12 +23,8 @@ impl Action {
 
 impl From<&Creep> for HarvestEnergy {
     fn from(creep: &Creep) -> Self {
-        if let Ok(Some(id)) = creep.memory().string(SOURCE) {
-            if let Ok(object_id) = ObjectId::from_str(&id) {
-                if let Ok(Some(source)) = object_id.try_resolve() {
-                    return Self {source: Some(source)};
-                }
-            }
+        if let Ok(Some(source)) = creep.memory().get(SOURCE) {
+            return Self {source: Some(source)};
         }
         Self {source: None}
     }
@@ -37,7 +33,7 @@ impl From<&Creep> for HarvestEnergy {
 impl Actionable for HarvestEnergy {
     fn save(&self, creep: &Creep) {
         if let Some(source) = &self.source {
-            creep.memory().set(SOURCE, source.id().to_string());
+            creep.memory().set(SOURCE, source);
         }
     }
     fn execute(&self, creep: &Creep) -> bool {
