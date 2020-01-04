@@ -24,7 +24,8 @@ impl UnitController for Gatherer {
     }
     fn control_creep(&self, creep: &Creep) {
         if creep.is_empty(ResourceType::Energy) {
-            return creep.set_action(Action::harvest_energy());
+            let source = creep.nearest_source();
+            return creep.set_action(Action::harvest_energy(source));
         }
         // Get spawn. If we have no spawn, do some upgrades
         if let Some(spawn) = creep.get_spawn() {

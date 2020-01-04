@@ -22,8 +22,9 @@ impl UnitController for Builder {
         &[Part::Move, Part::Carry, Part::Work]
     }
     fn control_creep(&self, creep: &Creep) {
+        let source = creep.nearest_source();
         if creep.is_empty(ResourceType::Energy) {
-            return creep.set_action(Action::harvest_energy());
+            return creep.set_action(Action::harvest_energy(source));
         }
         let my_pos = creep.pos();
         if let Some(structure) = game::structures::values()
@@ -32,7 +33,7 @@ impl UnitController for Builder {
             .min_by_key(|s| s.pos().get_range_to(&my_pos))
         {
             match creep.repair(&structure) {
-                ReturnCode::NotEnough => creep.set_action(Action::harvest_energy()),
+                ReturnCode::NotEnough => creep.set_action(Action::harvest_energy(source)),
                 ReturnCode::NotInRange => {
                     creep.move_to(&structure);
                 }
@@ -46,7 +47,7 @@ impl UnitController for Builder {
             .min_by_key(|c| c.pos().get_range_to(&my_pos))
         {
             match creep.build(&construction) {
-                ReturnCode::NotEnough => creep.set_action(Action::harvest_energy()),
+                ReturnCode::NotEnough => creep.set_action(Action::harvest_energy(source)),
                 ReturnCode::NotInRange => {
                     creep.move_to(&construction);
                 }

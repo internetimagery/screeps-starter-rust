@@ -4,39 +4,58 @@ use crate::actions::Action;
 use crate::actions::prelude::*;
 use crate::prelude::*;
 use log::*;
-use screeps::{game, Creep, ResourceType, ReturnCode};
+use screeps::{game, Creep, ResourceType, ReturnCode, Source, ObjectId};
+use screeps::objects::HasId;
 use std::convert::From;
+use std::str::FromStr;
 
-pub struct HarvestEnergy {}
+const SOURCE: &'static str = "source";
+
+pub struct HarvestEnergy {
+    source: Option<Source>,
+}
 
 impl Action {
-    pub fn harvest_energy() -> Action {
-        Action::HarvestEnergy(HarvestEnergy {})
+    pub fn harvest_energy(source: Source) -> Action {
+        Action::HarvestEnergy(HarvestEnergy {source: Some(source)})
     }
 }
 
 impl From<&Creep> for HarvestEnergy {
-    fn from(_: &Creep) -> Self {
-        Self {}
+    fn from(creep: &Creep) -> Self {
+        if let Ok(Some(id)) = creep.memory().string(SOURCE) {
+            if let Ok(object_id) = ObjectId::from_str(&id) {
+                if let Ok(Some(source)) = object_id.try_resolve() {
+                    return Self {source: Some(source)};
+                }
+            }
+        }
+        Self {source: None}
     }
 }
 
 impl Actionable for HarvestEnergy {
+    fn save(&self, creep: &Creep) {
+        if let Some(source) = &self.source {
+            creep.memory().set(SOURCE, source.id().to_string());
+        }
+    }
     fn execute(&self, creep: &Creep) -> bool {
         if creep.is_full(ResourceType::Energy) {
             return false;
         }
-        let source = creep.nearest_source();
-        match creep.harvest(&source) {
-            ReturnCode::Ok => {
-                if game::time() % 5 == 0 {
-                    creep.say("⏳", true);
+        if let Some(source) = &self.source {
+            match creep.harvest(source) {
+                ReturnCode::Ok => {
+                    if game::time() % 5 == 0 {
+                        creep.say("⏳", true);
+                    }
                 }
+                ReturnCode::NotInRange => {creep.move_to(source);},
+                x => warn!("Failed to harvest: {:?}", x),
             }
-            ReturnCode::NotInRange => {}
-            x => warn!("Failed to harvest: {:?}", x),
+            return true; // Need more energy!
         }
-        creep.move_to(&source);
-        true // Need more energy!
+        false
     }
 }

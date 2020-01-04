@@ -24,7 +24,8 @@ impl UnitController for Upgrader {
     }
     fn control_creep(&self, creep: &Creep) {
         if creep.is_empty(ResourceType::Energy) {
-            return creep.set_action(Action::harvest_energy());
+            let source = creep.nearest_source();
+            return creep.set_action(Action::harvest_energy(source));
         }
         if let Some(controller) = creep.room().controller() {
             match creep.upgrade_controller(&controller) {

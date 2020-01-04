@@ -22,7 +22,8 @@ impl UnitController for Miner {
     }
     fn control_creep(&self, creep: &Creep) {
         if !creep.is_full(ResourceType::Energy) {
-            return creep.set_action(Action::harvest_energy());
+            let source = creep.nearest_source();
+            return creep.set_action(Action::harvest_energy(source));
         }
         // Creeps that need energy
         let my_pos = creep.pos();
