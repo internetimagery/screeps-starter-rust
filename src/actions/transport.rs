@@ -1,13 +1,11 @@
 // Actions relating to transporting goods from one place to another. eg energy
 
-use crate::actions::Action;
 use crate::actions::prelude::*;
+use crate::actions::Action;
 use crate::prelude::*;
 use log::*;
-use screeps::{game, Creep, ResourceType, ReturnCode, Source, ObjectId};
-use screeps::objects::HasId;
+use screeps::{game, Creep, ResourceType, ReturnCode, Source};
 use std::convert::From;
-use std::str::FromStr;
 
 const SOURCE: &'static str = "source";
 
@@ -17,16 +15,20 @@ pub struct HarvestEnergy {
 
 impl Action {
     pub fn harvest_energy(source: Source) -> Action {
-        Action::HarvestEnergy(HarvestEnergy {source: Some(source)})
+        Action::HarvestEnergy(HarvestEnergy {
+            source: Some(source),
+        })
     }
 }
 
 impl From<&Creep> for HarvestEnergy {
     fn from(creep: &Creep) -> Self {
         if let Ok(Some(source)) = creep.memory().get(SOURCE) {
-            return Self {source: Some(source)};
+            return Self {
+                source: Some(source),
+            };
         }
-        Self {source: None}
+        Self { source: None }
     }
 }
 
@@ -47,7 +49,9 @@ impl Actionable for HarvestEnergy {
                         creep.say("⏳", true);
                     }
                 }
-                ReturnCode::NotInRange => {creep.move_to(source);},
+                ReturnCode::NotInRange => {
+                    creep.move_to(source);
+                }
                 x => warn!("Failed to harvest: {:?}", x),
             }
             return true; // Need more energy!

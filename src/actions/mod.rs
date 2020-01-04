@@ -1,8 +1,8 @@
 // Simple repeditive actions
 
-use screeps::Creep;
 use crate::register_for_creep;
 use prelude::*;
+use screeps::Creep;
 
 pub mod prelude;
 mod transport;

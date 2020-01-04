@@ -23,7 +23,6 @@ mod miner;
 const ROLE: &'static str = "role";
 const SPAWN: &'static str = "spawn";
 
-
 // Unit type ID's
 reversable_enum! {UnitTypes, i32, {
     Zombie = 0,

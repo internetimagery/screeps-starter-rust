@@ -1,9 +1,8 @@
 // Simple repeditive actions
+use super::ACTION;
 use crate::actions::Action;
 use screeps::Creep;
 use std::convert::{From, TryFrom};
-use super::ACTION;
-
 
 pub trait Actionable {
     fn save(&self, _: &Creep) {}
