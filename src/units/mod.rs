@@ -5,8 +5,8 @@ use screeps::memory::MemoryReference;
 use screeps::objects::{Creep, SpawnOptions, StructureSpawn};
 use screeps::{game, prelude::*, Part, ReturnCode};
 
-use crate::strategies::UnitCreep;
 use crate::reversable_enum;
+use crate::strategies::UnitCreep;
 use crate::strategies::UnitSpawn;
 
 // Basic Units
@@ -22,6 +22,7 @@ mod miner;
 // Common fields
 const ROLE: &'static str = "role";
 const SPAWN: &'static str = "spawn";
+
 
 // Unit type ID's
 reversable_enum! {UnitTypes, i32, {

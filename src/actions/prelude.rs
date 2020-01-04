@@ -1,9 +1,11 @@
 // Simple repeditive actions
 use crate::actions::Action;
 use screeps::Creep;
+use std::convert::{From, TryFrom};
+use super::ACTION;
+
 
 pub trait Actionable {
-    fn load(creep: &Creep) -> Self;
     fn save(&self, _: &Creep) {}
     fn execute(&self, creep: &Creep) -> bool;
 }
@@ -14,4 +16,20 @@ pub trait CreepActions {
     fn execute_action(&self) -> bool;
     // Set an action to run (next turn). Action may run over more than one turn till completion
     fn set_action(&self, action: Action);
+}
+
+impl CreepActions for Creep {
+    fn execute_action(&self) -> bool {
+        if let Ok(action) = Action::try_from(self) {
+            if action.execute(self) {
+                return true;
+            }
+            self.memory().set(ACTION, 0);
+        }
+        false
+    }
+    fn set_action(&self, action: Action) {
+        self.memory().set(ACTION, i32::from(&action));
+        action.save(self);
+    }
 }
