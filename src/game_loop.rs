@@ -1,37 +1,23 @@
 use crate::actions::prelude::*;
-use crate::strategies::Strategy;
-use crate::units::Unit;
+use crate::strategies::manage_forces;
 use log::*;
-use screeps::objects::{Creep, StructureSpawn};
 use screeps::{game, memory};
 use std::collections::HashSet;
-
-pub trait StrategySpawn {
-    fn recruit(&self, spawn: &StructureSpawn);
-}
-
-pub trait UnitCreep {
-    fn think(&self, creep: &Creep);
-}
 
 pub fn game_loop() {
     let starting_cpu = game::cpu::get_used();
 
-    // Spawn some units (maybe)
-    for spawn in game::spawns::values() {
-        let strategy = Strategy::from(&spawn);
-        strategy.recruit(&spawn);
-    }
+    // Run all creep actions if any are pending
+    let creeps: Vec<_> = game::creeps::values()
+        .into_iter()
+        .filter(|c| !c.execute_action())
+        .collect();
 
-    // Run our creeps AI
-    for creep in game::creeps::values() {
-        debug!("Running creep: {}", creep.name());
-        if creep.execute_action() {
-            continue;
-        }
-        let unit = Unit::from(&creep);
-        unit.think(&creep);
-    }
+    // TODO: manage a spawn queue, for spawns to save up for units
+    let spawns = game::spawns::values();
+
+    // Control our forces
+    manage_forces(spawns, creeps);
 
     // Be a good citizen
     run_cleanup();

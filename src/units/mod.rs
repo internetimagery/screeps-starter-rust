@@ -5,7 +5,7 @@ use screeps::memory::MemoryReference;
 use screeps::objects::{Creep, SpawnOptions, StructureSpawn};
 use screeps::{game, prelude::*, Part, ReturnCode};
 
-use crate::game_loop::UnitCreep;
+use crate::strategies::UnitCreep;
 use crate::reversable_enum;
 use crate::strategies::UnitSpawn;
 

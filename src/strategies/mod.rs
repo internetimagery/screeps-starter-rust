@@ -5,11 +5,12 @@
 // strategy should handle spawning of troops and perhaps rally points etc
 // perhaps strategy could also handle some creeps by setting memory data on them
 
-use crate::game_loop::StrategySpawn;
 use log::*;
+pub use management::{manage_forces, StrategySpawn, UnitCreep};
 use screeps::objects::StructureSpawn;
 
 mod caveman;
+mod management;
 mod simple_base;
 
 // Allow units to spawn
