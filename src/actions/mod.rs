@@ -16,6 +16,6 @@ register_for_creep! {
     (field=ACTION, name=Action),
     HarvestEnergy(transport::HarvestEnergy) = "harvest_energy",
     StoreEnergy(transport::StoreEnergy) = "store_energy",
-    BuildSite(build::BuildSite) = "construct",
+    BuildSite(build::BuildSite) = "build_site",
     RepairStructure(build::RepairStructure) = "repair_structure",
 }
