@@ -72,7 +72,7 @@ impl Action {
 impl From<&Creep> for StoreEnergy {
     fn from(creep: &Creep) -> Self {
         Self {
-            target: get_id!(creep, TARGET)
+            target: get_id!(creep, TARGET),
         }
     }
 }
@@ -94,7 +94,7 @@ impl Actionable for StoreEnergy {
                     ReturnCode::Full | ReturnCode::NotEnough => return false,
                     ReturnCode::NotInRange => {
                         creep.move_to(target);
-                        return true
+                        return true;
                     }
                     x => warn!("Failed to store energy: {:?}", x),
                 }

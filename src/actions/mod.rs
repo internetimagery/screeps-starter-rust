@@ -4,6 +4,7 @@ use crate::register_for_creep;
 use prelude::*;
 use screeps::Creep;
 
+mod build;
 pub mod prelude;
 mod transport;
 
@@ -15,4 +16,6 @@ register_for_creep! {
     (field=ACTION, name=Action),
     HarvestEnergy(transport::HarvestEnergy) = "harvest_energy",
     StoreEnergy(transport::StoreEnergy) = "store_energy",
+    BuildSite(build::BuildSite) = "construct",
+    RepairStructure(build::RepairStructure) = "repair_structure",
 }
