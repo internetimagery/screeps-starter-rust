@@ -13,6 +13,6 @@ const TARGET: &'static str = "target";
 // Register actions with their associated logic and serialized IDs
 register_for_creep! {
     (field=ACTION, name=Action),
-    HarvestEnergy(transport::HarvestEnergy) = 1,
+    HarvestEnergy(transport::HarvestEnergy) = "harvest_energy",
     // DeliverEnergy(transport::DeliverEnergy) = 2,
 }

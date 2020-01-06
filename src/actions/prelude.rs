@@ -28,7 +28,7 @@ impl CreepActions for Creep {
         false
     }
     fn set_action(&self, action: Action) {
-        self.memory().set(ACTION, i32::from(&action));
+        self.memory().set(ACTION, String::from(&action));
         action.save(self);
     }
 }

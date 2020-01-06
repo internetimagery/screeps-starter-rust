@@ -22,10 +22,10 @@ macro_rules! register_for_creep {
             }
         }
 
-        impl std::convert::From<&$enum_name> for i32 {
+        impl std::convert::From<&$enum_name> for String {
             fn from(value: &$enum_name) -> Self {
                 match value {
-                    $($enum_name::$name(_) => $value,)+
+                    $($enum_name::$name(_) => $value.to_string(),)+
                 }
             }
         }
@@ -34,8 +34,8 @@ macro_rules! register_for_creep {
             type Error = String;
             fn try_from(creep: &Creep) -> Result<Self, Self::Error> {
                 use std::convert::From;
-                if let Ok(Some(id)) = creep.memory().i32($field) {
-                    return match id {
+                if let Ok(Some(id)) = creep.memory().string($field) {
+                    return match id.as_ref() {
                         $($value => Ok($enum_name::$name(<$logic>::from(creep))),)+
                         x => Err(format!("Unknown $enum_name {}", x)),
                     }
