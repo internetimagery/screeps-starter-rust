@@ -1,9 +1,8 @@
 // Common Unit traits for useful abstractions
 use crate::units::{UnitTypes, ROLE, SPAWN};
 use screeps::objects::{Creep, StructureSpawn};
-use screeps::{game, prelude::*, ObjectId};
+use screeps::{game, prelude::*};
 use std::convert::TryFrom;
-use std::str::FromStr;
 
 pub trait CreepUnitExtras {
     fn get_spawn(&self) -> Option<StructureSpawn>;
@@ -13,14 +12,7 @@ pub trait CreepUnitExtras {
 impl CreepUnitExtras for Creep {
     // Get associated spawn point from stored ID
     fn get_spawn(&self) -> Option<StructureSpawn> {
-        if let Ok(Some(id)) = self.memory().string(SPAWN) {
-            if let Ok(object_id) = ObjectId::from_str(&id) {
-                if let Ok(spawn) = object_id.try_resolve() {
-                    return spawn;
-                }
-            }
-        }
-        None
+        get_id!(self, SPAWN)
     }
     // Get role of creep.
     fn get_role(&self) -> UnitTypes {
@@ -53,21 +45,21 @@ impl SpawnUnitExtras for StructureSpawn {
     }
 }
 
-const TEAM: &'static str = "team";
-
-pub trait TeamMates {
-    fn get_team(&self) -> String;
-    fn set_team(&self, team: &'static str);
-}
-
-impl TeamMates for Creep {
-    fn set_team(&self, team: &'static str) {
-        self.memory().set(TEAM, team);
-    }
-    fn get_team(&self) -> String {
-        match self.memory().string(TEAM) {
-            Ok(Some(team)) => team,
-            _ => "default".to_string(),
-        }
-    }
-}
+// const TEAM: &'static str = "team";
+//
+// pub trait TeamMates {
+//     fn get_team(&self) -> String;
+//     fn set_team(&self, team: &'static str);
+// }
+//
+// impl TeamMates for Creep {
+//     fn set_team(&self, team: &'static str) {
+//         self.memory().set(TEAM, team);
+//     }
+//     fn get_team(&self) -> String {
+//         match self.memory().string(TEAM) {
+//             Ok(Some(team)) => team,
+//             _ => "default".to_string(),
+//         }
+//     }
+// }
