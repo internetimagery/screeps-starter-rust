@@ -3,6 +3,7 @@
 use super::prelude::*;
 use super::{Action, TARGET};
 use crate::prelude::*;
+use crate::{get_id, set_id};
 use log::*;
 use screeps::{prelude::*, game, Creep, ResourceType, ReturnCode, Source};
 use std::convert::From;
@@ -21,19 +22,16 @@ impl Action {
 
 impl From<&Creep> for HarvestEnergy {
     fn from(creep: &Creep) -> Self {
-        if let Ok(Some(source)) = creep.memory().get(TARGET) {
-            return Self {
-                target: Some(source),
-            };
+        Self {
+            target: get_id!(creep, TARGET),
         }
-        Self { target: None }
     }
 }
 
 impl Actionable for HarvestEnergy {
     fn save(&self, creep: &Creep) {
         if let Some(source) = &self.target {
-            creep.memory().set(TARGET, source);
+            set_id!(creep, TARGET, source);
         }
     }
     fn execute(&self, creep: &Creep) -> bool {
@@ -58,18 +56,18 @@ impl Actionable for HarvestEnergy {
     }
 }
 
-// Deliver energy
-pub struct DeliverEnergy<T: HasPosition + HasStore> {
-    target: Option<T>,
-}
-
-impl Action {
-    pub fn deliver_energy<T: HasPosition + HasStore>(target: T) -> Action {
-        Action::DeliverEnergy(DeliverEnergy {
-            source: Some(target),
-        })
-    }
-}
+// // Deliver energy
+// pub struct DeliverEnergy<T: HasPosition + HasStore> {
+//     target: Option<T>,
+// }
+//
+// impl Action {
+//     pub fn deliver_energy<T: HasPosition + HasStore>(target: T) -> Action {
+//         Action::DeliverEnergy(DeliverEnergy {
+//             source: Some(target),
+//         })
+//     }
+// }
 //
 // impl From<&Creep> for DeliverEnergy {
 //     fn from(creep: &Creep) -> Self {

@@ -14,5 +14,5 @@ const TARGET: &'static str = "target";
 register_for_creep! {
     (field=ACTION, name=Action),
     HarvestEnergy(transport::HarvestEnergy) = 1,
-    DeliverEnergy(transport::DeliverEnergy) = 2,
+    // DeliverEnergy(transport::DeliverEnergy) = 2,
 }

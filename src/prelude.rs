@@ -42,3 +42,22 @@ impl StructureExtras for Structure {
         }
     }
 }
+
+const TEAM: &'static str = "team";
+
+pub trait TeamMates {
+    fn get_team(&self) -> String;
+    fn set_team(&self, team: &'static str);
+}
+
+impl TeamMates for Creep {
+    fn set_team(&self, team: &'static str) {
+        self.memory().set(TEAM, team);
+    }
+    fn get_team(&self) -> String {
+        match self.memory().string(TEAM) {
+            Ok(Some(team)) => team,
+            _ => "default".to_string(),
+        }
+    }
+}
