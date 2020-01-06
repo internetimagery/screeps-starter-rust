@@ -5,7 +5,7 @@ use super::{Action, TARGET};
 use crate::prelude::*;
 use crate::{get_id, set_id};
 use log::*;
-use screeps::{prelude::*, game, Creep, ResourceType, ReturnCode, Source};
+use screeps::{game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structure};
 use std::convert::From;
 
 pub struct HarvestEnergy {
@@ -13,9 +13,9 @@ pub struct HarvestEnergy {
 }
 
 impl Action {
-    pub fn harvest_energy(source: Source) -> Action {
+    pub fn harvest_energy(target: Source) -> Action {
         Action::HarvestEnergy(HarvestEnergy {
-            target: Some(source),
+            target: Some(target),
         })
     }
 }
@@ -30,23 +30,23 @@ impl From<&Creep> for HarvestEnergy {
 
 impl Actionable for HarvestEnergy {
     fn save(&self, creep: &Creep) {
-        if let Some(source) = &self.target {
-            set_id!(creep, TARGET, source);
+        if let Some(target) = &self.target {
+            set_id!(creep, TARGET, target);
         }
     }
     fn execute(&self, creep: &Creep) -> bool {
         if creep.is_full(ResourceType::Energy) {
             return false;
         }
-        if let Some(source) = &self.target {
-            match creep.harvest(source) {
+        if let Some(target) = &self.target {
+            match creep.harvest(target) {
                 ReturnCode::Ok => {
                     if game::time() % 5 == 0 {
                         creep.say("⏳", true);
                     }
                 }
                 ReturnCode::NotInRange => {
-                    creep.move_to(source);
+                    creep.move_to(target);
                 }
                 x => warn!("Failed to harvest: {:?}", x),
             }
@@ -56,54 +56,50 @@ impl Actionable for HarvestEnergy {
     }
 }
 
-// // Deliver energy
-// pub struct DeliverEnergy<T: HasPosition + HasStore> {
-//     target: Option<T>,
-// }
-//
-// impl Action {
-//     pub fn deliver_energy<T: HasPosition + HasStore>(target: T) -> Action {
-//         Action::DeliverEnergy(DeliverEnergy {
-//             source: Some(target),
-//         })
-//     }
-// }
-//
-// impl From<&Creep> for DeliverEnergy {
-//     fn from(creep: &Creep) -> Self {
-//         if let Ok(Some(target)) = creep.memory().get(TARGET) {
-//             return Self {
-//                 target: Some(target),
-//             };
-//         }
-//         Self { target: None }
-//     }
-// }
-//
-// impl Actionable for DeliverEnergy<T: HasPosition + HasStore> {
-//     fn save(&self, creep: &Creep) {
-//         if let Some(target) = &self.target {
-//             creep.memory().set(TARGET, target);
-//         }
-//     }
-//     fn execute(&self, creep: &Creep) -> bool {
-//         if creep.is_empty(ResourceType::Energy) {
-//             return false;
-//         }
-//         if let Some(source) = &self.source {
-//             match creep.transfer_all(source, ResourceType::Energy) {
-//                 ReturnCode::Ok => {
-//                     if game::time() % 5 == 0 {
-//                         creep.say("⏳", true);
-//                     }
-//                 }
-//                 ReturnCode::NotInRange => {
-//                     creep.move_to(source);
-//                 }
-//                 x => warn!("Failed to harvest: {:?}", x),
-//             }
-//             return true; // Need more energy!
-//         }
-//         false
-//     }
-// }
+// Store energy in spawn point or other structure
+pub struct StoreEnergy {
+    target: Option<Structure>,
+}
+
+impl Action {
+    pub fn store_energy(target: Structure) -> Action {
+        Action::StoreEnergy(StoreEnergy {
+            target: Some(target),
+        })
+    }
+}
+
+impl From<&Creep> for StoreEnergy {
+    fn from(creep: &Creep) -> Self {
+        Self {
+            target: get_id!(creep, TARGET)
+        }
+    }
+}
+
+impl Actionable for StoreEnergy {
+    fn save(&self, creep: &Creep) {
+        if let Some(target) = &self.target {
+            set_id!(creep, TARGET, target);
+        }
+    }
+    fn execute(&self, creep: &Creep) -> bool {
+        if creep.is_empty(ResourceType::Energy) {
+            return false;
+        }
+        if let Some(target) = &self.target {
+            if let Some(transferable) = target.as_transferable() {
+                match creep.transfer_all(transferable, ResourceType::Energy) {
+                    ReturnCode::Ok => return true,
+                    ReturnCode::Full | ReturnCode::NotEnough => return false,
+                    ReturnCode::NotInRange => {
+                        creep.move_to(target);
+                        return true
+                    }
+                    x => warn!("Failed to store energy: {:?}", x),
+                }
+            }
+        }
+        false
+    }
+}

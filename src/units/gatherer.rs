@@ -2,9 +2,8 @@
 // Simple cheap starter unit
 
 use crate::units::upgrader::Upgrader;
-use log::*;
 use screeps::objects::Creep;
-use screeps::{Part, ResourceType, ReturnCode};
+use screeps::{Part, ResourceType, Structure};
 
 use crate::actions::prelude::*;
 use crate::actions::Action;
@@ -29,13 +28,7 @@ impl UnitController for Gatherer {
         }
         // Get spawn. If we have no spawn, do some upgrades
         if let Some(spawn) = creep.get_spawn() {
-            match creep.transfer_all(&spawn, ResourceType::Energy) {
-                ReturnCode::Ok | ReturnCode::NotEnough | ReturnCode::Full => (),
-                ReturnCode::NotInRange => {
-                    creep.move_to(&spawn); // Handle some energy but not full
-                }
-                x => warn!("Failed to give spawn energy: {:?}", x),
-            }
+            return creep.set_action(Action::store_energy(Structure::Spawn(spawn)));
         } else {
             Upgrader {}.control_creep(creep)
         }

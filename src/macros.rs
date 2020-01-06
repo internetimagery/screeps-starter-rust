@@ -48,32 +48,26 @@ macro_rules! register_for_creep {
 
 #[macro_export]
 macro_rules! get_id {
-    ($creep:expr, $key:expr) => {
-        {
-            use std::str::FromStr;
-            match $creep.memory().string($key) {
-                Ok(Some(id)) => {
-                    match screeps::ObjectId::from_str(&id) {
-                        Ok(object_id) => {
-                            match object_id.try_resolve() {
-                                Ok(Some(obj)) => Some(obj),
-                                _ => None,
-                            }
-                        },
-                        _ => None,
-                    }
+    ($creep:expr, $key:expr) => {{
+        use std::str::FromStr;
+        match $creep.memory().string($key) {
+            Ok(Some(id)) => match screeps::ObjectId::from_str(&id) {
+                Ok(object_id) => match object_id.try_resolve() {
+                    Ok(Some(obj)) => Some(obj),
+                    _ => None,
                 },
                 _ => None,
-            }
+            },
+            _ => None,
         }
-    }
+    }};
 }
 
 #[macro_export]
 macro_rules! set_id {
     ($creep:expr, $key:expr, $obj:expr) => {
         $creep.memory().set($key, $obj.id().to_string())
-    }
+    };
 }
 
 // TODO: Replace this with something cleaner

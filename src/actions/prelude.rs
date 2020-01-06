@@ -23,7 +23,7 @@ impl CreepActions for Creep {
             if action.execute(self) {
                 return true;
             }
-            self.memory().set(ACTION, 0);
+            self.memory().set(ACTION, "lazy");
         }
         false
     }
