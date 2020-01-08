@@ -33,9 +33,6 @@ action_target! {
 action_target! {
     fn store_energy(target: Structure) -> StoreEnergy;
     fn execute(&self, creep: &Creep) -> bool {
-        if creep.is_empty(ResourceType::Energy) {
-            return false;
-        }
         if let Some(target) = &self.target {
             if let Some(transferable) = target.as_transferable() {
                 match creep.transfer_all(transferable, ResourceType::Energy) {
