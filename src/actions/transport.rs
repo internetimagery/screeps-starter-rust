@@ -17,14 +17,16 @@ action_target! {
                 ReturnCode::Ok => {
                     if game::time() % 5 == 0 {
                         creep.say("⏳", true);
+                        return true;
                     }
                 }
                 ReturnCode::NotInRange => {
                     creep.move_to(target);
+                    return true
                 }
+                ReturnCode::Full => return false,
                 x => warn!("Failed to harvest: {:?}", x),
             }
-            return true; // Need more energy!
         }
         false
     }
