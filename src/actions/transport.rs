@@ -5,6 +5,7 @@ use crate::{get_id, set_id};
 use log::*;
 use screeps::{game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structure};
 
+// Go get some more energy
 action_target! {
     fn harvest_energy(target: Source) -> HarvestEnergy;
     fn execute(&self, creep: &Creep) -> bool {
@@ -29,6 +30,7 @@ action_target! {
     }
 }
 
+// Store the engergy in a silo somewhere
 action_target! {
     fn store_energy(target: Structure) -> StoreEnergy;
     fn execute(&self, creep: &Creep) -> bool {
