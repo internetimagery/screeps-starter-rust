@@ -4,6 +4,8 @@ use crate::register_for_creep;
 use prelude::*;
 use screeps::Creep;
 
+#[macro_use]
+mod macros;
 mod build;
 pub mod prelude;
 mod transport;

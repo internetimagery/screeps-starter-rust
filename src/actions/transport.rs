@@ -1,39 +1,12 @@
 // Actions relating to transporting goods from one place to another. eg energy
 
-use super::prelude::*;
-use super::{Action, TARGET};
 use crate::prelude::*;
 use crate::{get_id, set_id};
 use log::*;
 use screeps::{game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structure};
-use std::convert::From;
 
-pub struct HarvestEnergy {
-    target: Option<Source>,
-}
-
-impl Action {
-    pub fn harvest_energy(target: Source) -> Action {
-        Action::HarvestEnergy(HarvestEnergy {
-            target: Some(target),
-        })
-    }
-}
-
-impl From<&Creep> for HarvestEnergy {
-    fn from(creep: &Creep) -> Self {
-        Self {
-            target: get_id!(creep, TARGET),
-        }
-    }
-}
-
-impl Actionable for HarvestEnergy {
-    fn save(&self, creep: &Creep) {
-        if let Some(target) = &self.target {
-            set_id!(creep, TARGET, target);
-        }
-    }
+action_target! {
+    fn harvest_energy(target: Source) -> HarvestEnergy;
     fn execute(&self, creep: &Creep) -> bool {
         if creep.is_full(ResourceType::Energy) {
             return false;
@@ -56,33 +29,8 @@ impl Actionable for HarvestEnergy {
     }
 }
 
-// Store energy in spawn point or other structure
-pub struct StoreEnergy {
-    target: Option<Structure>,
-}
-
-impl Action {
-    pub fn store_energy(target: Structure) -> Action {
-        Action::StoreEnergy(StoreEnergy {
-            target: Some(target),
-        })
-    }
-}
-
-impl From<&Creep> for StoreEnergy {
-    fn from(creep: &Creep) -> Self {
-        Self {
-            target: get_id!(creep, TARGET),
-        }
-    }
-}
-
-impl Actionable for StoreEnergy {
-    fn save(&self, creep: &Creep) {
-        if let Some(target) = &self.target {
-            set_id!(creep, TARGET, target);
-        }
-    }
+action_target! {
+    fn store_energy(target: Structure) -> StoreEnergy;
     fn execute(&self, creep: &Creep) -> bool {
         if creep.is_empty(ResourceType::Energy) {
             return false;
