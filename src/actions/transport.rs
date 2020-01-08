@@ -9,9 +9,6 @@ use screeps::{game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structu
 action_target! {
     fn harvest_energy(target: Source) -> HarvestEnergy;
     fn execute(&self, creep: &Creep) -> bool {
-        if creep.is_full(ResourceType::Energy) {
-            return false;
-        }
         if let Some(target) = &self.target {
             match creep.harvest(target) {
                 ReturnCode::Ok => {
