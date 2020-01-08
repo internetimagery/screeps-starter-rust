@@ -14,7 +14,7 @@ action_target! {
                 ReturnCode::Ok => {
                     if game::time() % 5 == 0 {
                         creep.say("⏳", true);
-                        return true;
+                        return true
                     }
                 }
                 ReturnCode::NotInRange => {
@@ -40,7 +40,7 @@ action_target! {
                     ReturnCode::Full | ReturnCode::NotEnough => return false,
                     ReturnCode::NotInRange => {
                         creep.move_to(target);
-                        return true;
+                        return true
                     }
                     x => warn!("Failed to store energy: {:?}", x),
                 }

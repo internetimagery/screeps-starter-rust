@@ -11,7 +11,7 @@ action_target! {
                 ReturnCode::NotEnough => return false,
                 ReturnCode::NotInRange => {
                     creep.move_to(target);
-                    return true;
+                    return true
                 }
                 x => warn!("Failed to build {:?}", x),
             }
@@ -29,7 +29,7 @@ action_target! {
                 ReturnCode::Ok | ReturnCode::NotEnough => return false,
                 ReturnCode::NotInRange => {
                     creep.move_to(target);
-                    return true;
+                    return true
                 }
                 x => warn!("Failed to repair {:?}", x),
             }
