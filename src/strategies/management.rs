@@ -15,7 +15,7 @@ pub trait UnitCreep {
 
 pub fn manage_forces(spawns: Vec<StructureSpawn>, mut creeps: Vec<Creep>) {
     // Remove creeps from Vec as they get jobs assigned
-    creeps.retain(|c| c.spawning()); // Ignore creeps still spawning
+    creeps.retain(|c| !c.spawning()); // Ignore creeps still spawning
     creeps.retain(|c| !c.execute_action()); // Run pending actions
     creeps.retain(needs_energy); // Empty creeps go get energy
 
