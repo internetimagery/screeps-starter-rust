@@ -7,7 +7,7 @@ action_target! {
     fn execute(&self, creep: &Creep) -> bool {
         if let Some(target) = &self.target {
             match creep.build(target) {
-                ReturnCode::Ok => return true,
+                ReturnCode::Ok | ReturnCode::Busy => return true,
                 ReturnCode::NotEnough => return false,
                 ReturnCode::NotInRange => {
                     creep.move_to(target);
@@ -26,6 +26,7 @@ action_target! {
     fn execute(&self, creep: &Creep) -> bool {
         if let Some(target) = &self.target {
             match creep.repair(target) {
+                ReturnCode::Busy => return true,
                 ReturnCode::Ok | ReturnCode::NotEnough => return false,
                 ReturnCode::NotInRange => {
                     creep.move_to(target);

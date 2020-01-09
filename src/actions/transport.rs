@@ -10,6 +10,7 @@ action_target! {
     fn execute(&self, creep: &Creep) -> bool {
         if let Some(target) = &self.target {
             match creep.harvest(target) {
+                ReturnCode::Busy => return true,
                 ReturnCode::Ok => {
                     if game::time() % 5 == 0 {
                         creep.say("⏳", true);
@@ -35,7 +36,7 @@ action_target! {
         if let Some(target) = &self.target {
             if let Some(transferable) = target.as_transferable() {
                 match creep.transfer_all(transferable, ResourceType::Energy) {
-                    ReturnCode::Ok => return true,
+                    ReturnCode::Ok | ReturnCode::Busy => return true,
                     ReturnCode::Full | ReturnCode::NotEnough => return false,
                     ReturnCode::NotInRange => {
                         creep.move_to(target);
