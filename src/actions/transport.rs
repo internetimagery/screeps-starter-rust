@@ -10,12 +10,11 @@ action_target! {
     fn execute(&self, creep: &Creep) -> bool {
         if let Some(target) = &self.target {
             match creep.harvest(target) {
-                ReturnCode::Busy => return true,
                 ReturnCode::Ok => {
                     if game::time() % 5 == 0 {
                         creep.say("⏳", true);
-                        return true
                     }
+                    return true
                 }
                 ReturnCode::NotInRange => {
                     creep.move_to(target);
