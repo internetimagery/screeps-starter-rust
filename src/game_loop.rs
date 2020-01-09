@@ -1,4 +1,3 @@
-use crate::actions::prelude::*;
 use crate::strategies::manage_forces;
 use log::*;
 use screeps::{game, memory};
@@ -7,17 +6,8 @@ use std::collections::HashSet;
 pub fn game_loop() {
     let starting_cpu = game::cpu::get_used();
 
-    // Run all creep actions if any are pending
-    let creeps: Vec<_> = game::creeps::values()
-        .into_iter()
-        .filter(|c| !c.execute_action())
-        .collect();
-
-    // TODO: manage a spawn queue, for spawns to save up for units
-    let spawns = game::spawns::values();
-
     // Control our forces
-    manage_forces(spawns, creeps);
+    manage_forces(game::spawns::values(), game::creeps::values());
 
     // Be a good citizen
     run_cleanup();
