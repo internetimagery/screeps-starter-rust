@@ -15,7 +15,8 @@ pub trait UnitCreep {
 
 pub fn manage_forces(spawns: Vec<StructureSpawn>, mut creeps: Vec<Creep>) {
     // Remove creeps from Vec as they get jobs assigned
-    creeps.retain(pending_actions); // Run pending actions
+    creeps.retain(|c| c.spawning()); // Ignore creeps still spawning
+    creeps.retain(|c| !c.execute_action()); // Run pending actions
     creeps.retain(needs_energy); // Empty creeps go get energy
 
     // TODO: Refactor into basic base building logic
@@ -33,10 +34,6 @@ pub fn manage_forces(spawns: Vec<StructureSpawn>, mut creeps: Vec<Creep>) {
         let unit = Unit::from(&creep);
         unit.think(&creep);
     }
-}
-
-fn pending_actions(creep: &Creep) -> bool {
-    !creep.execute_action()
 }
 
 // If empty, go get some energy
