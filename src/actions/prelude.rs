@@ -4,11 +4,6 @@ use crate::actions::Action;
 use screeps::Creep;
 use std::convert::{From, TryFrom};
 
-pub trait Actionable {
-    fn save(&self, _: &Creep) {}
-    fn execute(&self, creep: &Creep) -> bool;
-}
-
 // Helper methods exposed on the creep
 pub trait CreepActions {
     // Run an action if one exists. Return true if the action needs more turns to complete

@@ -1,6 +1,6 @@
 // Actions relating to transporting goods from one place to another. eg energy
 
-use crate::{get_id, set_id};
+use crate::{get_id, set_id, prelude::*};
 use log::*;
 use screeps::{game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structure};
 
@@ -8,6 +8,9 @@ use screeps::{game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structu
 action_target! {
     fn harvest_energy(target: Source) -> HarvestEnergy;
     fn execute(&self, creep: &Creep) -> bool {
+        if creep.is_full(ResourceType::Energy) {
+            return false // Handle cases where energy has been transferred in transit
+        }
         if let Some(target) = &self.target {
             match creep.harvest(target) {
                 ReturnCode::Ok => {

@@ -23,7 +23,7 @@ macro_rules! action_target {
             }
         }
 
-        impl crate::actions::Actionable for $name {
+        impl crate::prelude::Registerable for $name {
             fn save(&self, creep: &Creep) {
                 if let Some(target) = &self.target {
                     set_id!(creep, crate::actions::TARGET, target);

@@ -31,6 +31,8 @@ impl UnitController for Builder {
             .filter(|s| s.needs_repair())
             .min_by_key(|s| s.pos().get_range_to(&my_pos))
         {
+            use log::warn;
+            warn!("NEEDS REPAIR");
             return creep.set_action(Action::repair_structure(structure));
         }
         if let Some(construction) = game::construction_sites::values()

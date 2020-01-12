@@ -1,7 +1,6 @@
 // Simple repeditive actions
 
-use crate::register_for_creep;
-use prelude::*;
+use crate::{register_for_creep, prelude::*};
 use screeps::Creep;
 
 #[macro_use]

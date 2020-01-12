@@ -35,10 +35,9 @@ pub trait StructureExtras {
 
 impl StructureExtras for Structure {
     fn needs_repair(&self) -> bool {
-        if let Some(structure) = self.as_attackable() {
-            structure.hits_max() > structure.hits()
-        } else {
-            false
+        match self.as_attackable() {
+            Some(structure) => structure.hits_max() > structure.hits(),
+            None => false,
         }
     }
 }
@@ -60,4 +59,9 @@ impl TeamMates for Creep {
             _ => "default".to_string(),
         }
     }
+}
+
+pub trait Registerable {
+    fn save(&self, _: &Creep) {}
+    fn execute(&self, creep: &Creep) -> bool;
 }
