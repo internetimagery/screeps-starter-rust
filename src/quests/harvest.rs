@@ -1,10 +1,8 @@
 // Harvest energy!
-use screeps::Creep;
 use crate::prelude::*;
+use screeps::Creep;
 
-pub struct HarvestEnergy {
-
-}
+pub struct HarvestEnergy {}
 
 impl Registerable for HarvestEnergy {
     fn execute(&self, _: &Creep) -> bool {

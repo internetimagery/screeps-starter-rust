@@ -7,7 +7,6 @@ use screeps::objects::Creep;
 use screeps::{find, prelude::*, Part, ResourceType, ReturnCode};
 
 use crate::actions::prelude::*;
-use crate::actions::Action;
 
 use crate::units::UnitController;
 
@@ -23,7 +22,7 @@ impl UnitController for Miner {
     fn control_creep(&self, creep: &Creep) {
         if !creep.is_full(ResourceType::Energy) {
             let source = creep.nearest_source();
-            return creep.set_action(Action::harvest_energy(source));
+            return creep.actions().harvest_energy(&source);
         }
         // Creeps that need energy
         let my_pos = creep.pos();

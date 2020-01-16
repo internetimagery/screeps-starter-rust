@@ -1,9 +1,8 @@
-
-use screeps::Creep;
 use crate::{prelude::*, register_for_creep};
+use screeps::Creep;
 
-mod prelude;
 mod harvest;
+mod prelude;
 
 const QUEST: &'static str = "quest";
 

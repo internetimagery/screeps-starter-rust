@@ -12,7 +12,7 @@ pub trait CreepUnitExtras {
 impl CreepUnitExtras for Creep {
     // Get associated spawn point from stored ID
     fn get_spawn(&self) -> Option<StructureSpawn> {
-        get_id!(self, SPAWN)
+        load_id!(self, SPAWN)
     }
     // Get role of creep.
     fn get_role(&self) -> UnitTypes {

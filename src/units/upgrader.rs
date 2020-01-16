@@ -7,7 +7,6 @@ use screeps::objects::Creep;
 use screeps::{prelude::*, Part, ResourceType, ReturnCode};
 
 use crate::actions::prelude::*;
-use crate::actions::Action;
 
 use crate::prelude::*;
 use crate::units::UnitController;
@@ -25,7 +24,7 @@ impl UnitController for Upgrader {
     fn control_creep(&self, creep: &Creep) {
         if creep.is_empty(ResourceType::Energy) {
             let source = creep.nearest_source();
-            return creep.set_action(Action::harvest_energy(source));
+            return creep.actions().harvest_energy(&source);
         }
         if let Some(controller) = creep.room().controller() {
             match creep.upgrade_controller(&controller) {

@@ -3,10 +3,10 @@ use stdweb::js;
 #[macro_use]
 mod macros;
 mod actions;
-mod quests;
 mod game_loop;
 mod logging;
 mod prelude;
+mod quests;
 mod strategies;
 mod units;
 

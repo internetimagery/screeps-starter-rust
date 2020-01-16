@@ -2,6 +2,25 @@
 // Include an "id" that can be converted to and from
 // for use in serialization
 
+// creep.actions().harvest_energy()
+
+#[macro_export]
+macro_rules! collection {
+    (pub enum $enum_name:ident {$($name:ident {$($field_name:ident: $field_type:ty$(,)*)*},)+}) => {
+        $(
+            #[derive(serde::Serialize, serde::Deserialize, Debug)]
+            pub struct $name {
+                $($field_name: $field_type,)*
+            }
+        )+
+
+        #[derive(serde::Serialize, serde::Deserialize, Debug)]
+        pub enum $enum_name {
+            $($name($name),)+
+        }
+    }
+}
+
 #[macro_export]
 macro_rules! register_for_creep {
     ((field=$field:expr, name=$enum_name:ident), $($name: ident($logic:ty) = $value: expr,)+) => {
@@ -47,15 +66,19 @@ macro_rules! register_for_creep {
 }
 
 #[macro_export]
-macro_rules! get_id {
-    ($creep:expr, $key:expr) => {{
+macro_rules! to_id {
+    ($unit:expr) => {
+        $unit.id().to_string()
+    };
+}
+
+#[macro_export]
+macro_rules! from_id {
+    ($id:expr) => {{
         use std::str::FromStr;
-        match $creep.memory().string($key) {
-            Ok(Some(id)) => match screeps::ObjectId::from_str(&id) {
-                Ok(object_id) => match object_id.try_resolve() {
-                    Ok(Some(obj)) => Some(obj),
-                    _ => None,
-                },
+        match screeps::ObjectId::from_str($id) {
+            Ok(object_id) => match object_id.try_resolve() {
+                Ok(Some(unit)) => Some(unit),
                 _ => None,
             },
             _ => None,
@@ -64,9 +87,19 @@ macro_rules! get_id {
 }
 
 #[macro_export]
-macro_rules! set_id {
+macro_rules! load_id {
+    ($creep:expr, $key:expr) => {
+        match $creep.memory().string($key) {
+            Ok(Some(id)) => from_id!(&id),
+            _ => None,
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! save_id {
     ($creep:expr, $key:expr, $obj:expr) => {
-        $creep.memory().set($key, $obj.id().to_string())
+        $creep.memory().set($key, to_id!($obj))
     };
 }
 

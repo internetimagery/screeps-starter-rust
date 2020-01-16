@@ -1,17 +1,39 @@
+use super::{Action, ActionExecute, ActionProvider};
 use log::*;
 use screeps::{prelude::*, ConstructionSite, Creep, ReturnCode, Structure};
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+pub struct BuildSite {
+    target: String,
+}
+#[derive(Serialize, Deserialize)]
+pub struct RepairStructure {
+    target: String,
+}
+
+impl ActionProvider<'_, Creep> {
+    pub fn build_site(&self, target: &ConstructionSite) {
+        self.set_action(Action::BuildSite(BuildSite { target: to_id!(target) }))
+    }
+    pub fn repair_structure(&self, target: &Structure) {
+        self.set_action(Action::RepairStructure(RepairStructure {
+            target: to_id!(target),
+        }))
+    }
+}
 
 // Build up a construction site
-action_target! {
-    fn build_site(target: ConstructionSite) -> BuildSite;
+impl ActionExecute for BuildSite {
     fn execute(&self, creep: &Creep) -> bool {
-        if let Some(target) = &self.target {
-            match creep.build(target) {
+        let target: Option<ConstructionSite> = from_id!(&self.target);
+        if let Some(target) = target {
+            match creep.build(&target) {
                 ReturnCode::Ok | ReturnCode::Busy => return true,
                 ReturnCode::NotEnough => return false,
                 ReturnCode::NotInRange => {
-                    creep.move_to(target);
-                    return true
+                    creep.move_to(&target);
+                    return true;
                 }
                 x => warn!("Failed to build {:?}", x),
             }
@@ -21,16 +43,16 @@ action_target! {
 }
 
 // Repair something. Yay!
-action_target! {
-    fn repair_structure(target: Structure) -> RepairStructure;
+impl ActionExecute for RepairStructure {
     fn execute(&self, creep: &Creep) -> bool {
-        if let Some(target) = &self.target {
-            match creep.repair(target) {
+        let target: Option<Structure> = from_id!(&self.target);
+        if let Some(target) = target {
+            match creep.repair(&target) {
                 ReturnCode::Busy => return true,
                 ReturnCode::Ok | ReturnCode::NotEnough => return false,
                 ReturnCode::NotInRange => {
-                    creep.move_to(target);
-                    return true
+                    creep.move_to(&target);
+                    return true;
                 }
                 x => warn!("Failed to repair {:?}", x),
             }
