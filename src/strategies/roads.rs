@@ -2,18 +2,21 @@
 
 use log::*;
 use screeps::pathfinder::{search, SearchOptions};
-use screeps::{find, prelude::*, StructureSpawn, StructureType};
+use screeps::{find, prelude::*, Structure, StructureSpawn, StructureType};
 
 // Lay out construction sites to spawns, extensions and sources
 pub fn supply_infrustructure(spawn: &StructureSpawn) {
     info!("Upgrading supply infruastructure");
     let room = spawn.room();
     let sources = room.find(find::SOURCES);
-    let stores: Vec<_> = room
+    let mut stores: Vec<_> = room
         .find(find::STRUCTURES)
         .into_iter()
         .filter(|s| s.as_has_energy_for_spawn().is_some())
         .collect();
+    if let Some(controller) = room.controller() {
+        stores.push(Structure::Controller(controller));
+    }
     for source in sources {
         for store in &stores {
             let options = SearchOptions::new().swamp_cost(1);
