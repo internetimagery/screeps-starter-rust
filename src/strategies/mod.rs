@@ -11,6 +11,7 @@ use screeps::objects::StructureSpawn;
 
 mod caveman;
 mod management;
+mod roads;
 mod simple_base;
 
 // Allow units to spawn

@@ -1,8 +1,9 @@
+use super::roads::supply_infrustructure;
 use crate::actions::prelude::*;
 use crate::prelude::*;
 use crate::strategies::Strategy;
 use crate::units::Unit;
-use screeps::{Creep, ResourceType, StructureSpawn};
+use screeps::{game, Creep, ResourceType, StructureSpawn};
 
 pub trait StrategySpawn {
     fn recruit(&self, spawn: &StructureSpawn);
@@ -17,6 +18,15 @@ pub fn manage_forces(spawns: Vec<StructureSpawn>, mut creeps: Vec<Creep>) {
     creeps.retain(|c| !c.spawning()); // Ignore creeps still spawning
     creeps.retain(|c| !c.actions().execute()); // Run pending actions
     creeps.retain(needs_energy); // Empty creeps go get energy
+
+    let time = game::time();
+
+    // Lay out some infrastructure for collecting source energy
+    if time % 100 == 0 {
+        for spawn in &spawns {
+            supply_infrustructure(spawn);
+        }
+    }
 
     // TODO: Refactor into basic base building logic
     // Refactor unit type logic. Make it more centralized. So different units can take on different tasks
