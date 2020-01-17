@@ -67,7 +67,6 @@ fn prolong_life(creep: &Creep) -> bool {
         if result.opaque_path().len() < 50 {
             // We are close enough and have enough life left it's probably worth renewing!
             creep.actions().renew_life(&spawn);
-            return false;
         }
     }
     true
