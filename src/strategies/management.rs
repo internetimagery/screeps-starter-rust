@@ -59,12 +59,12 @@ fn needs_energy(creep: &Creep) -> bool {
 }
 
 fn prolong_life(creep: &Creep) -> bool {
-    if creep.ticks_to_live() != 30 {
+    if creep.ticks_to_live() != 100 {
         return true;
     }
     if let Some(spawn) = creep.pos().find_closest_by_range(find::MY_SPAWNS) {
         let result = search(creep, &spawn, 2, SearchOptions::new());
-        if result.opaque_path().len() < 15 {
+        if result.opaque_path().len() < 50 {
             // We are close enough and have enough life left it's probably worth renewing!
             creep.actions().renew_life(&spawn);
             return false;
