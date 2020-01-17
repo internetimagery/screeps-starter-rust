@@ -3,7 +3,9 @@
 use super::{prelude::*, Action, ActionProvider};
 use crate::prelude::*;
 use log::*;
-use screeps::{game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structure};
+use screeps::{
+    game, prelude::*, Creep, ResourceType, ReturnCode, Source, Structure, StructureSpawn,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -13,6 +15,10 @@ pub struct HarvestEnergy {
 #[derive(Serialize, Deserialize)]
 pub struct StoreEnergy {
     target: String,
+}
+#[derive(Serialize, Deserialize)]
+pub struct RenewLife {
+    spawn: String,
 }
 
 impl ActionProvider<'_, Creep> {
@@ -24,6 +30,11 @@ impl ActionProvider<'_, Creep> {
     pub fn store_energy(&self, target: &Structure) {
         self.set_action(Action::StoreEnergy(StoreEnergy {
             target: to_id!(target),
+        }))
+    }
+    pub fn renew_life(&self, spawn: &StructureSpawn) {
+        self.set_action(Action::RenewLife(RenewLife {
+            spawn: to_id!(spawn),
         }))
     }
 }
@@ -70,6 +81,24 @@ impl ActionExecute for StoreEnergy {
                     }
                     x => warn!("Failed to store energy: {:?}", x),
                 }
+            }
+        }
+        false
+    }
+}
+
+// Run to spawn and try getting a renew
+impl ActionExecute for RenewLife {
+    fn execute(&self, creep: &Creep) -> bool {
+        let spawn: Option<StructureSpawn> = from_id!(&self.spawn);
+        if let Some(spawn) = spawn {
+            match spawn.renew_creep(creep) {
+                ReturnCode::Ok | ReturnCode::Full => return false, // DONE!
+                ReturnCode::Busy | ReturnCode::NotEnough | ReturnCode::NotInRange => {
+                    creep.move_to(&spawn);
+                    return true;
+                }
+                x => warn!("Failed to renew creep {:?}", x),
             }
         }
         false

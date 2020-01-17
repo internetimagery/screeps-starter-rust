@@ -20,7 +20,7 @@ pub fn supply_infrustructure(spawn: &StructureSpawn) {
     for source in sources {
         for store in &stores {
             let options = SearchOptions::new().swamp_cost(1);
-            for pos in search(&source, store, 2, options).load_local_path() {
+            for pos in search(&source, store, 1, options).load_local_path() {
                 room.create_construction_site(&pos, StructureType::Road);
             }
         }

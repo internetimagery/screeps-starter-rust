@@ -17,6 +17,7 @@ pub enum Action {
     StoreEnergy(transport::StoreEnergy),
     BuildSite(build::BuildSite),
     RepairStructure(build::RepairStructure),
+    RenewLife(transport::RenewLife),
 }
 
 impl Action {
@@ -27,6 +28,7 @@ impl Action {
             Self::StoreEnergy(x) => x.execute(creep),
             Self::BuildSite(x) => x.execute(creep),
             Self::RepairStructure(x) => x.execute(creep),
+            Self::RenewLife(x) => x.execute(creep),
         }
     }
 }
