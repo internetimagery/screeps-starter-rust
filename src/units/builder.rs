@@ -24,16 +24,21 @@ impl UnitController for Builder {
             let source = creep.nearest_source();
             return creep.actions().harvest_energy(&source);
         }
+
         let my_pos = creep.pos();
         if let Some(structure) = game::structures::values()
             .into_iter()
-            .filter(|s| s.needs_repair())
+            .filter(|s| match s.as_attackable() {
+                Some(unit) => unit.hits() < unit.hits_max(),
+                None => false,
+            })
             .min_by_key(|s| s.pos().get_range_to(&my_pos))
         {
             use log::warn;
             warn!("NEEDS REPAIR");
             return creep.actions().repair_structure(&structure);
         }
+
         if let Some(construction) = game::construction_sites::values()
             .into_iter()
             .min_by_key(|c| c.pos().get_range_to(&my_pos))

@@ -1,23 +1,40 @@
 // General utilities
 
+use screeps::objects::Attackable;
 use screeps::objects::{Creep, Source, Structure};
 use screeps::{find, prelude::*, ResourceType};
 
+pub trait StoreUtility: HasStore {
+    // Return true if unit is full
+    fn is_full(&self, res: ResourceType) -> bool {
+        self.store_free_capacity(Some(res)) == 0
+    }
+    // Return true if unit is empty
+    fn is_empty(&self, res: ResourceType) -> bool {
+        self.store_used_capacity(Some(res)) == 0
+    }
+}
+
+impl<T: HasStore> StoreUtility for T {}
+impl StoreUtility for dyn HasStore {}
+
+pub trait AttackableUtility: Attackable {
+    // How much HP is lost?
+    fn hits_lost(&self) -> u32 {
+        self.hits_max() - self.hits()
+    }
+}
+
+impl<T: Attackable> AttackableUtility for T {}
+impl AttackableUtility for dyn Attackable {}
+
+/////////// Refactor out below
+
 pub trait CreepExtras {
-    fn is_full(&self, res: ResourceType) -> bool;
-    fn is_empty(&self, res: ResourceType) -> bool;
     fn nearest_source(&self) -> Source;
 }
 
 impl CreepExtras for Creep {
-    // Return true if creep is full
-    fn is_full(&self, res: ResourceType) -> bool {
-        self.store_free_capacity(Some(res)) == 0
-    }
-    // Return true if creep is empty
-    fn is_empty(&self, res: ResourceType) -> bool {
-        self.store_used_capacity(Some(res)) == 0
-    }
     // Look for the nearest energy source
     fn nearest_source(&self) -> Source {
         let my_pos = self.pos();

@@ -14,7 +14,9 @@ pub struct RepairStructure {
 
 impl ActionProvider<'_, Creep> {
     pub fn build_site(&self, target: &ConstructionSite) {
-        self.set_action(Action::BuildSite(BuildSite { target: to_id!(target) }))
+        self.set_action(Action::BuildSite(BuildSite {
+            target: to_id!(target),
+        }))
     }
     pub fn repair_structure(&self, target: &Structure) {
         self.set_action(Action::RepairStructure(RepairStructure {
