@@ -24,7 +24,7 @@ pub fn manage_forces(spawns: Vec<StructureSpawn>, mut creeps: Vec<Creep>) {
     let time = game::time();
 
     // Lay out some infrastructure for collecting source energy
-    if time % 100 == 0 {
+    if time % 500 == 0 {
         for spawn in &spawns {
             supply_infrustructure(spawn);
         }
