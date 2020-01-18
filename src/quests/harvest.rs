@@ -1,17 +1,8 @@
-// Harvest energy!
-use crate::prelude::*;
-use screeps::Creep;
 
-pub struct HarvestEnergy {}
+use serde::{Serialize, Deserialize};
 
-impl Registerable for HarvestEnergy {
-    fn execute(&self, _: &Creep) -> bool {
-        false
-    }
-}
+// The spawn needs some filling! Go and fill it up!
+#[derive(Serialize, Deserialize)]
+pub struct FillSpawn {
 
-impl From<&Creep> for HarvestEnergy {
-    fn from(_: &Creep) -> Self {
-        Self {}
-    }
 }

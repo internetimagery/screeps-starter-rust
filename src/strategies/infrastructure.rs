@@ -5,7 +5,7 @@ use screeps::pathfinder::{search, SearchOptions};
 use screeps::{find, prelude::*, Structure, StructureSpawn, StructureType};
 
 // Lay out construction sites to spawns, extensions and sources
-pub fn supply_infrustructure(spawn: &StructureSpawn) {
+pub fn supply_roads(spawn: &StructureSpawn) {
     info!("Upgrading supply infruastructure");
     let room = spawn.room();
     let sources = room.find(find::SOURCES);

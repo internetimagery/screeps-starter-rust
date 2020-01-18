@@ -26,7 +26,7 @@ impl ActionProvider<'_, Creep> {
 }
 
 // Build up a construction site
-impl ActionExecute for BuildSite {
+impl ActionExecute<Creep> for BuildSite {
     fn execute(&self, creep: &Creep) -> bool {
         let target: Option<ConstructionSite> = from_id!(&self.target);
         if let Some(target) = target {
@@ -45,7 +45,7 @@ impl ActionExecute for BuildSite {
 }
 
 // Repair something. Yay!
-impl ActionExecute for RepairStructure {
+impl ActionExecute<Creep> for RepairStructure {
     fn execute(&self, creep: &Creep) -> bool {
         let target: Option<Structure> = from_id!(&self.target);
         if let Some(target) = target {

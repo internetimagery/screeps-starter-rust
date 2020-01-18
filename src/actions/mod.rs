@@ -1,7 +1,7 @@
 // Simple repeditive actions
 
 use prelude::*;
-use screeps::Creep;
+use screeps::{Creep};
 use serde::{Deserialize, Serialize};
 
 mod build;

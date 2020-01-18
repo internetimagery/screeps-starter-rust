@@ -40,7 +40,7 @@ impl ActionProvider<'_, Creep> {
 }
 
 // Go get some more energy
-impl ActionExecute for HarvestEnergy {
+impl ActionExecute<Creep> for HarvestEnergy {
     fn execute(&self, creep: &Creep) -> bool {
         if creep.is_full(ResourceType::Energy) {
             return false; // Handle cases where energy has been transferred in transit
@@ -67,7 +67,7 @@ impl ActionExecute for HarvestEnergy {
 }
 
 // Store the engergy in a silo somewhere
-impl ActionExecute for StoreEnergy {
+impl ActionExecute<Creep> for StoreEnergy {
     fn execute(&self, creep: &Creep) -> bool {
         let target: Option<Structure> = from_id!(&self.target);
         if let Some(target) = target {
@@ -88,7 +88,7 @@ impl ActionExecute for StoreEnergy {
 }
 
 // Run to spawn and try getting a renew
-impl ActionExecute for RenewLife {
+impl ActionExecute<Creep> for RenewLife {
     fn execute(&self, creep: &Creep) -> bool {
         let spawn: Option<StructureSpawn> = from_id!(&self.spawn);
         if let Some(spawn) = spawn {
