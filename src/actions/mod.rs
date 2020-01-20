@@ -14,7 +14,7 @@ const ACTION: &'static str = "action";
 // Resolve objectids
 macro_rules! ok {
     ($name:expr) => {
-        $name.try_resolve()?.ok_or("Failed to resolve")?
+        $name.try_resolve()?.ok_or_else(|| format!("Failed to resolve: {:?}", $name))?
     };
 }
 

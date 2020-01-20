@@ -4,6 +4,12 @@ use log::*;
 use screeps::pathfinder::{search, SearchOptions};
 use screeps::{find, prelude::*, Structure, StructureSpawn, StructureType};
 
+// TODO: make roads that lead in a single direction to and from locations, using locations id as name
+// When discovering roads, use a custom heristic which heavily penalizes other roads
+// so we get two roads, a lane each.
+// If possible... see if road direction can be engrained in the road itself, for later pathfinding
+// to correctly choose a lane.
+
 // Lay out construction sites to spawns, extensions and sources
 pub fn supply_roads(spawn: &StructureSpawn) {
     info!("Upgrading supply infruastructure");
