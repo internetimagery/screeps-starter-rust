@@ -1,15 +1,22 @@
 // Simple repeditive actions
 
-use prelude::*;
-use screeps::{Creep};
+use crate::exception::Res;
+use log::*;
+use screeps::{*};
 use serde::{Deserialize, Serialize};
-// use stdweb::{__js_serializable_boilerplate, js_deserializable, js_serializable};
 
 mod build;
 pub mod prelude;
 mod transport;
 
 const ACTION: &'static str = "action";
+
+// Resolve objectids
+macro_rules! ok {
+    ($name:expr) => {
+        $name.try_resolve()?.ok_or("Failed to resolve")?
+    };
+}
 
 pub enum ActionResult {
     Done,
@@ -20,22 +27,25 @@ pub enum ActionResult {
 // Register our actions
 #[derive(Serialize, Deserialize)]
 pub enum Action {
-    HarvestEnergy(transport::HarvestEnergy),
-    StoreEnergy(transport::StoreEnergy),
-    BuildSite(build::BuildSite),
-    RepairStructure(build::RepairStructure),
-    RenewLife(transport::RenewLife),
+    // GoTo { location: Position },
+    HarvestEnergy { source: ObjectId<Source> },
+    StoreEnergy { store: ObjectId<Structure> },
+    RenewLife { spawn: ObjectId<StructureSpawn> },
+    BuildSite { site: ObjectId<ConstructionSite> },
+    RepairStructure { target: ObjectId<Structure> },
 }
 
 impl Action {
     // Run by action provider
-    fn execute(&self, creep: &Creep) -> ActionResult {
+    fn execute(&self, creep: &Creep) -> Res<ActionResult> {
+        use Action::*;
         match self {
-            Self::HarvestEnergy(x) => x.execute(creep),
-            Self::StoreEnergy(x) => x.execute(creep),
-            Self::BuildSite(x) => x.execute(creep),
-            Self::RepairStructure(x) => x.execute(creep),
-            Self::RenewLife(x) => x.execute(creep),
+            // GoTo { location } => transport::go_to(creep, location),
+            HarvestEnergy { source } => transport::harvest_energy(creep, &ok!(source)),
+            StoreEnergy { store } => transport::store_energy(creep, &ok!(store)),
+            RenewLife { spawn } => transport::renew_life(creep, &ok!(spawn)),
+            BuildSite { site } => build::build_site(creep, &ok!(site)),
+            RepairStructure { target } => build::repair_structure(creep, &ok!(target)),
         }
     }
 }
@@ -56,8 +66,10 @@ impl ActionProvider<'_, Creep> {
     pub fn execute(&self) -> bool {
         if let Ok(Some(data)) = self.source.memory().string(ACTION) {
             if let Ok(action) = serde_json::from_str::<Action>(&data) {
-                if let ActionResult::Done = action.execute(self.source) {
-                    return true
+                match action.execute(self.source) {
+                    Ok(ActionResult::Continue) => return true,
+                    Err(x) => warn!("Action failed: {:?}", x),
+                    Ok(_) => (),
                 }
             }
         }

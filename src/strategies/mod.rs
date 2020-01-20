@@ -10,8 +10,8 @@ pub use management::{manage_forces, StrategySpawn, UnitCreep};
 use screeps::objects::StructureSpawn;
 
 mod caveman;
-mod management;
 mod infrastructure;
+mod management;
 mod simple_base;
 
 // Allow units to spawn

@@ -3,13 +3,13 @@ use stdweb::js;
 #[macro_use]
 mod macros;
 mod actions;
+mod exception;
 mod game_loop;
 mod logging;
 mod prelude;
 mod quests;
 mod strategies;
 mod units;
-
 
 fn main() {
     logging::setup_logging(logging::Info);

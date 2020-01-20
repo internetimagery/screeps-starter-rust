@@ -1,11 +1,13 @@
 use super::infrastructure::supply_roads;
 use crate::actions::prelude::*;
-use crate::quests::prelude::*;
 use crate::prelude::*;
+use crate::quests::prelude::*;
 use crate::strategies::Strategy;
 use crate::units::Unit;
 use screeps::pathfinder::{search, SearchOptions};
-use screeps::{find, game, prelude::*, Creep, ResourceType, Structure, StructureSpawn, StructureTower};
+use screeps::{
+    find, game, prelude::*, Creep, ResourceType, Structure, StructureSpawn, StructureTower,
+};
 
 pub trait StrategySpawn {
     fn recruit(&self, spawn: &StructureSpawn);
@@ -85,7 +87,12 @@ fn prolong_life(creep: &Creep) -> bool {
 
 fn defend_room(tower: &StructureTower) {
     let my_pos = tower.pos();
-    if let Some(enemy) = tower.room().find(find::HOSTILE_CREEPS).into_iter().min_by_key(|c| c.pos().get_range_to(&my_pos)) {
+    if let Some(enemy) = tower
+        .room()
+        .find(find::HOSTILE_CREEPS)
+        .into_iter()
+        .min_by_key(|c| c.pos().get_range_to(&my_pos))
+    {
         tower.attack(&enemy);
     }
 }

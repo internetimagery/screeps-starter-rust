@@ -1,9 +1,10 @@
 // Simple repeditive actions
 use super::{ActionProvider, ActionResult};
+use crate::exception::Res;
 use screeps::{Creep, StructureTower};
 
 pub trait ActionExecute<T> {
-    fn execute(&self, unit: &T) -> ActionResult;
+    fn execute(&self, unit: &T) -> Res<ActionResult>;
 }
 
 pub trait ActionProviderTrait<T> {

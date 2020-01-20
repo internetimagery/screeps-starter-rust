@@ -1,64 +1,41 @@
-use super::{Action, ActionExecute, ActionProvider, ActionResult};
-use log::*;
+use super::{Action, ActionProvider, ActionResult};
+use crate::exception::Res;
 use screeps::{prelude::*, ConstructionSite, Creep, ReturnCode, Structure};
-use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
-pub struct BuildSite {
-    target: String,
-}
-#[derive(Serialize, Deserialize)]
-pub struct RepairStructure {
-    target: String,
-}
-
+// Initializers /////////////////////////////////
 impl ActionProvider<'_, Creep> {
-    pub fn build_site(&self, target: &ConstructionSite) {
-        self.set_action(Action::BuildSite(BuildSite {
-            target: to_id!(target),
-        }))
+    pub fn build_site(&self, site: &ConstructionSite) {
+        self.set_action(Action::BuildSite { site: site.id() })
     }
     pub fn repair_structure(&self, target: &Structure) {
-        self.set_action(Action::RepairStructure(RepairStructure {
-            target: to_id!(target),
-        }))
+        self.set_action(Action::RepairStructure {
+            target: target.id(),
+        })
     }
 }
 
-// Build up a construction site
-impl ActionExecute<Creep> for BuildSite {
-    fn execute(&self, creep: &Creep) -> ActionResult {
-        let target: Option<ConstructionSite> = from_id!(&self.target);
-        if let Some(target) = target {
-            match creep.build(&target) {
-                ReturnCode::Ok | ReturnCode::Busy => return ActionResult::Continue,
-                ReturnCode::NotEnough => return ActionResult::Done,
-                ReturnCode::NotInRange => {
-                    creep.move_to(&target);
-                    return ActionResult::Continue;
-                }
-                x => warn!("Failed to build {:?}", x),
-            }
+// Functionality ///////////////////////////////
+
+pub fn build_site(creep: &Creep, site: &ConstructionSite) -> Res<ActionResult> {
+    match creep.build(site) {
+        ReturnCode::Ok | ReturnCode::Busy => Ok(ActionResult::Continue),
+        ReturnCode::NotEnough => Ok(ActionResult::Done),
+        ReturnCode::NotInRange => {
+            creep.move_to(site);
+            Ok(ActionResult::Continue)
         }
-        ActionResult::Done
+        x => Err(format!("Failed to build {:?}", x))?,
     }
 }
 
-// Repair something. Yay!
-impl ActionExecute<Creep> for RepairStructure {
-    fn execute(&self, creep: &Creep) -> ActionResult {
-        let target: Option<Structure> = from_id!(&self.target);
-        if let Some(target) = target {
-            match creep.repair(&target) {
-                ReturnCode::Busy => return ActionResult::Continue,
-                ReturnCode::Ok | ReturnCode::NotEnough => return ActionResult::Done,
-                ReturnCode::NotInRange => {
-                    creep.move_to(&target);
-                    return ActionResult::Continue;
-                }
-                x => warn!("Failed to repair {:?}", x),
-            }
+pub fn repair_structure(creep: &Creep, target: &Structure) -> Res<ActionResult> {
+    match creep.repair(target) {
+        ReturnCode::Busy => Ok(ActionResult::Continue),
+        ReturnCode::Ok | ReturnCode::NotEnough => Ok(ActionResult::Done),
+        ReturnCode::NotInRange => {
+            creep.move_to(target);
+            Ok(ActionResult::Continue)
         }
-        ActionResult::Done
+        x => Err(format!("Failed to repair {:?}", x))?,
     }
 }
