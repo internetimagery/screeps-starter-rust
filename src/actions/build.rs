@@ -1,4 +1,4 @@
-use super::{Action, ActionExecute, ActionProvider};
+use super::{Action, ActionExecute, ActionProvider, ActionResult};
 use log::*;
 use screeps::{prelude::*, ConstructionSite, Creep, ReturnCode, Structure};
 use serde::{Deserialize, Serialize};
@@ -27,38 +27,38 @@ impl ActionProvider<'_, Creep> {
 
 // Build up a construction site
 impl ActionExecute<Creep> for BuildSite {
-    fn execute(&self, creep: &Creep) -> bool {
+    fn execute(&self, creep: &Creep) -> ActionResult {
         let target: Option<ConstructionSite> = from_id!(&self.target);
         if let Some(target) = target {
             match creep.build(&target) {
-                ReturnCode::Ok | ReturnCode::Busy => return true,
-                ReturnCode::NotEnough => return false,
+                ReturnCode::Ok | ReturnCode::Busy => return ActionResult::Continue,
+                ReturnCode::NotEnough => return ActionResult::Done,
                 ReturnCode::NotInRange => {
                     creep.move_to(&target);
-                    return true;
+                    return ActionResult::Continue;
                 }
                 x => warn!("Failed to build {:?}", x),
             }
         }
-        false
+        ActionResult::Done
     }
 }
 
 // Repair something. Yay!
 impl ActionExecute<Creep> for RepairStructure {
-    fn execute(&self, creep: &Creep) -> bool {
+    fn execute(&self, creep: &Creep) -> ActionResult {
         let target: Option<Structure> = from_id!(&self.target);
         if let Some(target) = target {
             match creep.repair(&target) {
-                ReturnCode::Busy => return true,
-                ReturnCode::Ok | ReturnCode::NotEnough => return false,
+                ReturnCode::Busy => return ActionResult::Continue,
+                ReturnCode::Ok | ReturnCode::NotEnough => return ActionResult::Done,
                 ReturnCode::NotInRange => {
                     creep.move_to(&target);
-                    return true;
+                    return ActionResult::Continue;
                 }
                 x => warn!("Failed to repair {:?}", x),
             }
         }
-        false
+        ActionResult::Done
     }
 }

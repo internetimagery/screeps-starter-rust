@@ -1,9 +1,9 @@
 // Simple repeditive actions
-use super::ActionProvider;
+use super::{ActionProvider, ActionResult};
 use screeps::{Creep, StructureTower};
 
 pub trait ActionExecute<T> {
-    fn execute(&self, unit: &T) -> bool;
+    fn execute(&self, unit: &T) -> ActionResult;
 }
 
 pub trait ActionProviderTrait<T> {

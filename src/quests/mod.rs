@@ -1,6 +1,13 @@
 
 use serde::{Serialize, Deserialize};
 use std::collections::hash_map::{HashMap, Iter};
+use screeps::Creep;
+
+
+// Should make a queue system for the spawners too
+// queue with priority
+
+// spawn goals make sense also
 
 mod harvest;
 pub mod prelude;
@@ -11,6 +18,12 @@ const BULLETIN: &'static str = "bulletin";
 #[derive(Serialize, Deserialize)]
 enum Quest {
     FillSpawn(harvest::FillSpawn),
+}
+
+impl Quest {
+    fn achievable(&self, creep: &Creep) -> Option<u32> {
+        None
+    }
 }
 
 // Hold all our quests!

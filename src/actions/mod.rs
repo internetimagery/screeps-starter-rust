@@ -3,12 +3,19 @@
 use prelude::*;
 use screeps::{Creep};
 use serde::{Deserialize, Serialize};
+// use stdweb::{__js_serializable_boilerplate, js_deserializable, js_serializable};
 
 mod build;
 pub mod prelude;
 mod transport;
 
 const ACTION: &'static str = "action";
+
+pub enum ActionResult {
+    Done,
+    Continue,
+    Abort,
+}
 
 // Register our actions
 #[derive(Serialize, Deserialize)]
@@ -22,7 +29,7 @@ pub enum Action {
 
 impl Action {
     // Run by action provider
-    fn execute(&self, creep: &Creep) -> bool {
+    fn execute(&self, creep: &Creep) -> ActionResult {
         match self {
             Self::HarvestEnergy(x) => x.execute(creep),
             Self::StoreEnergy(x) => x.execute(creep),
@@ -43,14 +50,14 @@ impl ActionProvider<'_, Creep> {
     fn set_action(&self, action: Action) {
         self.source
             .memory()
-            .set(ACTION, serde_json::to_string(&action).unwrap());
+            .set(ACTION, &serde_json::to_string(&action).unwrap());
     }
     // Use in game loop to progress actions another tick
     pub fn execute(&self) -> bool {
         if let Ok(Some(data)) = self.source.memory().string(ACTION) {
             if let Ok(action) = serde_json::from_str::<Action>(&data) {
-                if action.execute(self.source) {
-                    return true;
+                if let ActionResult::Done = action.execute(self.source) {
+                    return true
                 }
             }
         }

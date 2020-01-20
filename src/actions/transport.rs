@@ -1,6 +1,6 @@
 // Actions relating to transporting goods from one place to another. eg energy
 
-use super::{prelude::*, Action, ActionProvider};
+use super::{prelude::*, Action, ActionProvider, ActionResult};
 use crate::prelude::*;
 use log::*;
 use screeps::{
@@ -41,9 +41,9 @@ impl ActionProvider<'_, Creep> {
 
 // Go get some more energy
 impl ActionExecute<Creep> for HarvestEnergy {
-    fn execute(&self, creep: &Creep) -> bool {
+    fn execute(&self, creep: &Creep) -> ActionResult {
         if creep.is_full(ResourceType::Energy) {
-            return false; // Handle cases where energy has been transferred in transit
+            return ActionResult::Abort; // Handle cases where energy has been transferred in transit
         }
         let target: Option<Source> = from_id!(&self.source);
         if let Some(target) = target {
@@ -52,55 +52,55 @@ impl ActionExecute<Creep> for HarvestEnergy {
                     if game::time() % 5 == 0 {
                         creep.say("⏳", true);
                     }
-                    return true;
+                    return ActionResult::Continue;
                 }
                 ReturnCode::NotInRange => {
                     creep.move_to(&target);
-                    return true;
+                    return ActionResult::Continue;
                 }
-                ReturnCode::Full => return false,
+                ReturnCode::Full => return ActionResult::Done,
                 x => warn!("Failed to harvest: {:?}", x),
             }
         }
-        false
+        ActionResult::Done
     }
 }
 
 // Store the engergy in a silo somewhere
 impl ActionExecute<Creep> for StoreEnergy {
-    fn execute(&self, creep: &Creep) -> bool {
+    fn execute(&self, creep: &Creep) -> ActionResult {
         let target: Option<Structure> = from_id!(&self.target);
         if let Some(target) = target {
             if let Some(transferable) = target.as_transferable() {
                 match creep.transfer_all(transferable, ResourceType::Energy) {
-                    ReturnCode::Ok | ReturnCode::Busy => return true,
-                    ReturnCode::Full | ReturnCode::NotEnough => return false,
+                    ReturnCode::Ok | ReturnCode::Busy => return ActionResult::Continue,
+                    ReturnCode::Full | ReturnCode::NotEnough => return ActionResult::Done,
                     ReturnCode::NotInRange => {
                         creep.move_to(&target);
-                        return true;
+                        return ActionResult::Continue;
                     }
                     x => warn!("Failed to store energy: {:?}", x),
                 }
             }
         }
-        false
+        ActionResult::Done
     }
 }
 
 // Run to spawn and try getting a renew
 impl ActionExecute<Creep> for RenewLife {
-    fn execute(&self, creep: &Creep) -> bool {
+    fn execute(&self, creep: &Creep) -> ActionResult {
         let spawn: Option<StructureSpawn> = from_id!(&self.spawn);
         if let Some(spawn) = spawn {
             match spawn.renew_creep(creep) {
-                ReturnCode::Ok | ReturnCode::Full => return false, // DONE!
+                ReturnCode::Ok | ReturnCode::Full => return ActionResult::Done, // DONE!
                 ReturnCode::Busy | ReturnCode::NotEnough | ReturnCode::NotInRange => {
                     creep.move_to(&spawn);
-                    return true;
+                    return ActionResult::Continue;
                 }
                 x => warn!("Failed to renew creep {:?}", x),
             }
         }
-        false
+        ActionResult::Done
     }
 }
