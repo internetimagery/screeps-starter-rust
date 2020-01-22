@@ -2,7 +2,7 @@
 
 use crate::exception::Res;
 use log::*;
-use screeps::{*};
+use screeps::*;
 use serde::{Deserialize, Serialize};
 
 mod build;
@@ -14,7 +14,9 @@ const ACTION: &'static str = "action";
 // Resolve objectids
 macro_rules! ok {
     ($name:expr) => {
-        $name.try_resolve()?.ok_or_else(|| format!("Failed to resolve: {:?}", $name))?
+        $name
+            .try_resolve()?
+            .ok_or_else(|| format!("Failed to resolve: {:?}\n{}:{}", $name, file!(), line!()))?
     };
 }
 
@@ -44,7 +46,14 @@ impl Action {
             HarvestEnergy { source } => transport::harvest_energy(creep, &ok!(source)),
             StoreEnergy { store } => transport::store_energy(creep, &ok!(store)),
             RenewLife { spawn } => transport::renew_life(creep, &ok!(spawn)),
-            BuildSite { site } => build::build_site(creep, &ok!(site)),
+            // BuildSite { site } => build::build_site(creep, &ok!(site)),
+            BuildSite { site } => {
+                // Temporary till more reliable construction logic, and assigned tasks are added
+                match site.try_resolve() {
+                    Ok(Some(site)) => build::build_site(creep, &site),
+                    _ => Ok(ActionResult::Abort),
+                }
+            },
             RepairStructure { target } => build::repair_structure(creep, &ok!(target)),
         }
     }
